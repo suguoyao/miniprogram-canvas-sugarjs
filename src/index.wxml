@@ -1,0 +1,13 @@
+<!--<canvas canvas-id="canvas-sugarjs"
+        type="2d"
+        disable-scroll="true"
+        bindtouchstart="touchstart"
+        bindtouchmove="touchmove"
+        bindtouchend="touchend"
+        bindtouchcancel="touchcancel"
+        bindlongtap="longtap"
+        binderror="error"
+        style='width: {{width}}rpx; height: {{height}}rpx;'>
+</canvas>-->
+
+<view>Canvas-SugarJS</view>

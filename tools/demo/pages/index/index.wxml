@@ -1,0 +1,10 @@
+<canvas canvas-id="sugarjs"
+        disable-scroll="true"
+        style='width: {{width}}px; height: {{height}}px;'>
+</canvas>
+
+<view class="btn-group">
+  <button bindtap="addRect">rect</button>
+  <button bindtap="addText">text</button>
+  <button bindtap="addImage">image</button>
+</view>

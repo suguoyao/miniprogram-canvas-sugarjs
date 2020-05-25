@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "sugar": "../../components/index"
+  }
+}
