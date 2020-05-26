@@ -1,9 +1,7 @@
 /**
  * Created by Sugar on 2020/5/26.
  */
-const CommonMethods = require('./mixins/shared_methods.mixin')
 const {invertTransform, transformPoint, loadImage} = require('./utils/misc')
-const {mergeMethods} = require('./utils/index')
 const PointClass = require('point.class')
 const ImageClass = require('./shapes/image.class')
 
@@ -14,11 +12,13 @@ class CanvasClass {
     if (!canvas || !ctx) {
       throw new Error(`请传入<canvas>组件节点`)
     }
-    canvas.width = options.width
-    canvas.height = options.height
+    const dpr = wx.getSystemInfoSync().pixelRatio
+    canvas.width = options.width * dpr
+    canvas.height = options.height * dpr
+    ctx.scale(dpr, dpr)
     this.ctx = ctx
     this.canvas = canvas
-    this.dpr = wx.getSystemInfoSync().pixelRatio
+    this.dpr = dpr
     // this.width = width
     // this.height = height
     // this._objects = []
@@ -83,6 +83,7 @@ class CanvasClass {
   __setBgOverlayImage(property, image, callback, options) {
     if (typeof image === 'string') {
       loadImage(image, (img, isError) => {
+        console.log('设置背景图', img);
         if (img) {
           var instance = new ImageClass(img, options)
           this[property] = instance
@@ -222,6 +223,7 @@ class CanvasClass {
     this.clearContext(ctx)
     // setImageSmoothing(ctx, this.imageSmoothingEnabled);
     // this.fire('before:render', {ctx: ctx,});
+    console.log('before:render');
     this._renderBackground(ctx);
 
     ctx.save();
@@ -232,10 +234,11 @@ class CanvasClass {
     if (!this.controlsAboveOverlay) {
       this.drawControls(ctx)
     }
-    this._renderOverlay(ctx)
+    // this._renderOverlay(ctx)
     if (this.controlsAboveOverlay) {
       this.drawControls(ctx)
     }
+    console.log('renderCanvas after:render');
     // this.fire('after:render', {ctx: ctx,})
   }
 
@@ -282,6 +285,7 @@ class CanvasClass {
       ctx.restore()
     }
     if (object) {
+      console.log('has object and draw', object);
       ctx.save()
       if (needsVpt) {
         ctx.transform(v[0], v[1], v[2], v[3], v[4], v[5])
@@ -318,7 +322,5 @@ class CanvasClass {
     }
   }
 }
-
-mergeMethods(CanvasClass, CommonMethods)
 
 module.exports = CanvasClass

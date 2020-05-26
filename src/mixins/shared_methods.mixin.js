@@ -5,19 +5,19 @@ const Gradient = require('../gradient.class')
 const Pattern = require('../pattern.class')
 
 module.exports = {
-  _setOptions: function (options) {
+  _setOptions(options) {
     for (var prop in options) {
       this.set(prop, options[prop]);
     }
   },
 
-  _initGradient: function (filler, property) {
+  _initGradient(filler, property) {
     if (filler && filler.colorStops && !(filler instanceof Gradient)) {
       this.set(property, new Gradient(filler));
     }
   },
 
-  _initPattern: function (filler, property, callback) {
+  _initPattern(filler, property, callback) {
     if (filler && filler.source && !(filler instanceof Pattern)) {
       this.set(property, new Pattern(filler, callback));
     } else {
@@ -25,13 +25,13 @@ module.exports = {
     }
   },
 
-  _setObject: function (obj) {
+  _setObject(obj) {
     for (var prop in obj) {
       this._set(prop, obj[prop]);
     }
   },
 
-  set: function (key, value) {
+  set(key, value) {
     if (typeof key === 'object') {
       this._setObject(key);
     } else {
@@ -40,11 +40,11 @@ module.exports = {
     return this;
   },
 
-  _set: function (key, value) {
+  _set(key, value) {
     this[key] = value;
   },
 
-  toggle: function (property) {
+  toggle(property) {
     var value = this.get(property);
     if (typeof value === 'boolean') {
       this.set(property, !value);
@@ -52,7 +52,7 @@ module.exports = {
     return this;
   },
 
-  get: function (property) {
+  get(property) {
     return this[property];
   }
 };

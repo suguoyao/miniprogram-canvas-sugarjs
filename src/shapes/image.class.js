@@ -11,6 +11,10 @@ class ImageClass extends ObjectClass {
 
     this.type = 'image'
     this.cacheKey = '' // 用于检索图像的标识key
+    this._filterScalingX = 1
+    this._filterScalingY = 1
+    this.cropX = 0
+    this.cropY = 0
 
     this.initialize(image, options)
   }
@@ -49,8 +53,45 @@ class ImageClass extends ObjectClass {
     options || (options = {});
     let el = this.getElement();
     // el.width el.height为图像原始宽高
-    this.width = options.width || el.width || 0;
-    this.height = options.height || el.width || 0;
+    let width = options.width || el.width || 0;
+    let height = options.height || el.height || 0;
+    this.width = width
+    this.height = height
+  }
+
+  _render(ctx) {
+    this._stroke(ctx)
+    this._renderPaintInOrder(ctx)
+  }
+
+  _renderFill(ctx) {
+    let elementToDraw = this._element
+    if (!elementToDraw) {
+      return;
+    }
+    let dW = this.width, dH = this.height,
+      sW = Math.min(elementToDraw.width, dW * this._filterScalingX),
+      sH = Math.min(elementToDraw.height, dH * this._filterScalingY),
+      dx = -dW / 2, dy = -dH / 2,
+      sX = Math.max(0, this.cropX * this._filterScalingX),
+      sY = Math.max(0, this.cropY * this._filterScalingY);
+    // console.log(sX, sY, sW, sH, dx, dy, dW, dH);
+    // elementToDraw && ctx.drawImage(elementToDraw, sX, sY, sW, sH, dx, dy, dW, dH);
+    elementToDraw && ctx.drawImage(elementToDraw, sX, sY, sW, sH);
+  }
+
+  _stroke(ctx) {
+    if (!this.stroke || this.strokeWidth === 0) {
+      return;
+    }
+    let w = this.width / 2, h = this.height / 2
+    ctx.beginPath()
+    ctx.moveTo(-w, -h)
+    ctx.lineTo(w, -h)
+    ctx.lineTo(w, h)
+    ctx.lineTo(-w, h)
+    ctx.lineTo(-w, -h)
+    ctx.closePath()
   }
 }
 

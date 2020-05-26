@@ -25,9 +25,19 @@ Page({
           canvas: canvas,
           width: this.data.width,
           height: this.data.height,
-          backgroundColor: '#04AA94'
+          backgroundColor: 'skyblue'
         })
         console.log('sugar.Canvas初始化', this.sugar)
+        this.sugar.setBackgroundImage('http://g.hiphotos.baidu.com/zhidao/pic/item/6a600c338744ebf844eebc72d9f9d72a6159a7e4.jpg', this.sugar.renderAll.bind(this.sugar), {
+          width: this.data.width,
+          height: this.data.height
+        });
+
+        // sugar.Image.fromURL('https://sugars.oss-cn-shenzhen.aliyuncs.com/diy/template/1.jpg', (img) => {
+        //   console.log('load image fromURL', img);
+        //   // img.set({width: this.sugar.width, height: this.sugar.height});
+        //   this.sugar.setBackgroundImage(img, this.sugar.renderAll.bind(this.sugar));
+        // });
       })
   },
   addRect() {
@@ -50,4 +60,7 @@ Page({
   addImage() {
 
   },
+  getCanvasObject() {
+    console.log(this.sugar);
+  }
 })

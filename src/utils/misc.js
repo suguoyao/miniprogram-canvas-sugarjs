@@ -57,7 +57,7 @@ const populateWithProperties = (source, destination, properties) => {
 
 
 /**
- * 获取图片信息。网络图片需先配置download域名才能生效。
+ * 获取图片。网络图片需先配置download域名才能生效。
  * @param {String} url
  * @param {Function} callback
  * @param {*} [context] 调用回调的上下文
@@ -68,23 +68,41 @@ const loadImage = (url, callback, context) => {
     return;
   }
 
-  wx.getImageInfo({
-    src: url,
-    success(res) {
-      /**
-       * res数据结构
-       width  number  图片原始宽度，单位px。不考虑旋转。
-       height  number  图片原始高度，单位px。不考虑旋转。
-       path  string  图片的本地路径
-       orientation  string  拍照时设备方向
-       type  string  图片格式
-       */
-      callback && callback.call(context, res, false)
-    },
-    fail(err) {
-      callback && callback.call(context, null, true)
-    }
-  })
+  const query = wx.createSelectorQuery()
+  query.select(`#sugarjs`)
+    .fields({node: true, size: true})
+    .exec(res => {
+      const canvas = res[0].node
+      wx.getImageInfo({
+        src: url,
+        success(res) {
+          /**
+           * res数据结构
+           width  number  图片原始宽度，单位px。不考虑旋转。
+           height  number  图片原始高度，单位px。不考虑旋转。
+           path  string  图片的本地路径
+           orientation  string  拍照时设备方向
+           type  string  图片格式
+           */
+          let img = canvas.createImage()
+          img.src = res.path
+          img.onload = (res) => {
+            callback && callback.call(context, img, false)
+            img = img.onload = img.onerror = null
+          }
+
+          img.onerror = () => {
+            callback && callback.call(context, null, true)
+            img = img.onload = img.onerror = null
+          }
+
+          // callback && callback.call(context, res, false)
+        },
+        fail(err) {
+          callback && callback.call(context, null, true)
+        }
+      })
+    })
 }
 
 module.exports = {
