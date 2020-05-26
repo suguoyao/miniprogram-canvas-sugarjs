@@ -12,7 +12,7 @@ const dev = path.join(demoDist, 'components')
 const dist = path.resolve(__dirname, '../miniprogram_dist')
 
 module.exports = {
-  entry: ['index', 'canvas-sugarjs'],
+  entry: ['index', 'sugarjs'],
 
   isDev,
   isWatch,
@@ -75,5 +75,5 @@ module.exports = {
     }
   },
 
-  copy: ['./assets', './utils.js'], // 将会复制到目标目录
+  copy: ['./assets'], // 将会复制到目标目录
 }

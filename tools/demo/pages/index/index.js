@@ -1,4 +1,4 @@
-const createCanvasSugarJS = require('../../components/canvas-sugarjs.js')
+const sugar = require('../../components/sugarjs')
 const {windowWidth} = wx.getSystemInfoSync()
 
 Page({
@@ -7,16 +7,31 @@ Page({
     height: 500,
   },
   onReady() {
-    this.sugar = createCanvasSugarJS({
-      // id: 'sugarjs',
-      width: this.data.width,
-      height: this.data.height,
-      context: wx.createCanvasContext('sugarjs'),
-      page: this
-    })
+    // this.sugar = createCanvasSugarJS({
+    //   width: this.data.width,
+    //   height: this.data.height,
+    //   context: wx.createCanvasContext('sugarjs')
+    // })
+
+    // const ctx = wx.createCanvasContext('sugarjs')
+    // this.canvas = new sugar.Canvas(ctx)
+
+    const query = wx.createSelectorQuery()
+    query.select(`#sugarjs`)
+      .fields({node: true, size: true})
+      .exec(res => {
+        const canvas = res[0].node
+        this.sugar = new sugar.Canvas({
+          canvas: canvas,
+          width: this.data.width,
+          height: this.data.height,
+          backgroundColor: '#04AA94'
+        })
+        console.log('sugar.Canvas初始化', this.sugar)
+      })
   },
   addRect() {
-    this.sugar.add()
+    // this.sugar.add()
   },
   addText() {
     // const textbox = new sugar.Textbox('这是一段文字', {
