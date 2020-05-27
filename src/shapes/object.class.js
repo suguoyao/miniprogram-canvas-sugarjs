@@ -20,6 +20,7 @@ class ObjectClass {
     this.stroke = null
     this.padding = 0
     this.fill = 'rgb(0,0,0)'
+    this.strokeWidth = 1
     this.backgroundColor = ''
     this.borderColor = '#000000'
     this.selectable = true
@@ -27,8 +28,6 @@ class ObjectClass {
     this.hasControls = true
     this.lockMovementX = false
     this.lockMovementY = false
-
-    this.initialize(options)
   }
 
   initialize(options) {

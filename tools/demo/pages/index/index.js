@@ -46,14 +46,14 @@ Page({
     // this.sugar.add()
   },
   addText() {
-    // const text = new sugar.Text('SugarJS', {
-    //   left: 50,
-    //   top: 50,
-    //   fontSize: 20,
-    //   fontWeight: 800,
-    //   color: 'orange'
-    // });
-    // this.sugar.add(text)
+    const text = new sugar.Text('Sugar苏', {
+      left: 100,
+      top: 200,
+      fontSize: 50,
+      // fontWeight: 800,
+      fill: 'blue'
+    })
+    this.sugar.add(text)
     // this.sugar.add(textbox).setActiveObject(textbox)
   },
   addImage1() {
