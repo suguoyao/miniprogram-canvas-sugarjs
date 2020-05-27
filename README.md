@@ -4,27 +4,85 @@
 
 ## 介绍
 
-打造一个致力于微信小程序的Canvas库，类似于H5原生JS Canvas库-FabricJS
+打造一个致力于微信小程序的Canvas库，类似于H5原生JS Canvas库 - [FabricJS](http://fabricjs.com/)
+
+## 开发进度
+
+开发中...
 
 ## 使用方法
 
 1. 安装组件
 
 ```
-npm install --save miniprogram-recycle-view
+npm install --save miniprogram-canvas-sugarjs
 ```
 
 2. 在页面的js文件中引用
 
-   ```js
-   const createCanvasSugarJS = require('miniprogram-canvas-sugarjs')
-   Page({
-       onReady() {
-           const sugar = createCanvasSugarJS({
-               width: 300,
-               height: 200,
-               context: wx.createCanvasContext('sugarjs')
-           })
-       }
-   })
-   ```
+```js
+const sugar = require('miniprogram-canvas-sugarjs/sugarjs')
+
+Page({
+  onReady() {
+    const query = wx.createSelectorQuery()
+        query.select(`#sugarjs`)
+          .fields({node: true, size: true})
+          .exec(res => {
+            const canvas = res[0].node
+            this.sugar = new sugar.Canvas({
+              canvas: canvas,
+              width: this.data.width,
+              height: this.data.height,
+              backgroundColor: 'skyblue'
+            })
+          })
+  }
+})
+```
+
+
+
+### 功能清单
+
+1. canvas主体
+- [x] 初始化（宽高、背景）
+- [ ] 其他...
+
+2. 图层类
+- [ ] 基类ObjectClass
+- [ ] 图片ImageClass
+- [ ] 文本TextClass
+- [ ] 矩形RectClass
+- [ ] 三角形TriangleClass
+- [ ] 多边形PolygonClass
+- [ ] 直线LineClass
+- [ ] 圆CircleClass
+- [ ] 椭圆EllipseClass
+- [ ] 群组GroupClass
+- [ ] 其他...
+
+
+3. 操作
+- [ ] 增删
+- [ ] 点击图层进入选中状态（显示图层边框控件）
+- [ ] 拖动
+- [ ] 缩放
+- [ ] 旋转
+- [ ] 翻转
+- [ ] 图层层级管理（上移、下移、置顶、置底）
+- [ ] 文本内容编辑
+- [ ] 其他...
+
+4. 事件监听
+- [ ] canvas初始化周期事件
+- [ ] 手指触摸事件
+- [ ] 清单3中的操作事件的监听
+- [ ] 其他...
+
+5. 拓展、增强功能
+- [ ] 状态存储（撤销undo、恢复redo）
+- [ ] 导入、导出canvas数据
+- [ ] 动画
+- [ ] 其他...
+
