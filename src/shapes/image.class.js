@@ -65,19 +65,21 @@ class ImageClass extends ObjectClass {
   }
 
   _renderFill(ctx) {
+    console.log('绘制图片', this)
     let elementToDraw = this._element
     if (!elementToDraw) {
       return;
     }
     let dW = this.width, dH = this.height,
+      // elementToDraw的width和height为图像原始宽高
       sW = Math.min(elementToDraw.width, dW * this._filterScalingX),
       sH = Math.min(elementToDraw.height, dH * this._filterScalingY),
       dx = -dW / 2, dy = -dH / 2,
       sX = Math.max(0, this.cropX * this._filterScalingX),
-      sY = Math.max(0, this.cropY * this._filterScalingY);
+      sY = Math.max(0, this.cropY * this._filterScalingY)
     // console.log(sX, sY, sW, sH, dx, dy, dW, dH);
-    // elementToDraw && ctx.drawImage(elementToDraw, sX, sY, sW, sH, dx, dy, dW, dH);
-    elementToDraw && ctx.drawImage(elementToDraw, sX, sY, sW, sH);
+    // elementToDraw && ctx.drawImage(elementToDraw, sX, sY, sW, sH, dx, dy, dW, dH)
+    elementToDraw && ctx.drawImage(elementToDraw, sX, sY, sW, sH, 0, 0, dW, dH)
   }
 
   _stroke(ctx) {
@@ -92,6 +94,14 @@ class ImageClass extends ObjectClass {
     ctx.lineTo(-w, h)
     ctx.lineTo(-w, -h)
     ctx.closePath()
+  }
+
+  /**
+   * 图像是否应用了裁剪
+   * @return {Boolean}
+   */
+  hasCrop() {
+    return this.cropX || this.cropY || this.width < this._element.width || this.height < this._element.height
   }
 }
 

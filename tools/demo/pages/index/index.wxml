@@ -5,7 +5,8 @@
 </canvas>
 
 <view class="btn-group">
-  <button bindtap="getCanvasObject">getCanvasObject</button>
-  <!--<button bindtap="addText">text</button>
-  <button bindtap="addImage">image</button>-->
+  <button bindtap="getCanvasObject">获取Canvas</button>
+  <button bindtap="addImage1">图片1</button>
+  <button bindtap="addImage2">图片2</button>
+  <button bindtap="addText">文本</button>
 </view>

@@ -79,21 +79,22 @@ class ObjectClass {
     //   this.saveState({propertySet: 'cacheProperties'});
     // }
     // }
-    ctx.restore();
+    ctx.restore()
   }
 
   drawObject(ctx, forClipping) {
     let originalFill = this.fill
     let originalStroke = this.stroke
     if (forClipping) {
-      this.fill = 'black';
-      this.stroke = '';
-      // this._setClippingProperties(ctx); // TODO
+      this.fill = 'black'
+      this.stroke = ''
+      // this._setClippingProperties(ctx) // TODO
     } else {
       // this._renderBackground(ctx)
       // this._setStrokeStyles(ctx, this)
       // this._setFillStyles(ctx, this)
     }
+    // 调用子类的_render方法，绘制到canvas
     this._render(ctx)
     // this._drawClipPath(ctx)
     this.fill = originalFill
