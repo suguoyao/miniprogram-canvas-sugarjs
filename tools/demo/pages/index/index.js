@@ -40,6 +40,13 @@ Page({
           })
           this.sugar.setBackgroundImage(img, this.sugar.renderAll.bind(this.sugar))
         })
+
+        this.sugar.on('object:added', (e) => {
+          console.log('object:added')
+        })
+        this.sugar.on('object:removed', (e) => {
+          console.log('object:removed')
+        })
       })
   },
   addRect() {
@@ -79,5 +86,21 @@ Page({
   },
   getCanvasObject() {
     console.log(this.sugar)
-  }
+  },
+
+  touchstart(e) {
+    console.log('小程序touchstart', e)
+  },
+  touchmove(e) {
+    console.log('小程序touchmove', e)
+  },
+  touchend(e) {
+    console.log('小程序touchend', e)
+  },
+  touchcancel(e) {
+    console.log('小程序touchcancel', e)
+  },
+  longtap(e) {
+    console.log('小程序longtap', e)
+  },
 })

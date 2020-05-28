@@ -13,12 +13,15 @@ const ColorClass = require('./color.class')
 
 const {mergeMethods} = require('./utils/index')
 const CommonMethods = require('./mixins/shared_methods.mixin')
+const Observable = require('./mixins/observable.mixin')
 const TextStyles = require('./mixins/text_style.mixin')
 
 let Sugar = {}
 
 mergeMethods(CanvasClass, CommonMethods)
+mergeMethods(CanvasClass, Observable)
 mergeMethods(ObjectClass, CommonMethods)
+mergeMethods(ObjectClass, Observable)
 
 mergeMethods(TextClass, TextStyles)
 

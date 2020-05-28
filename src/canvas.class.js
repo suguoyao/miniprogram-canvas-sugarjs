@@ -34,10 +34,23 @@ class CanvasClass {
 
     this.viewportTransform = [1, 0, 0, 1, 0, 0]
     this.vptCoords = {} // 画布的四个角左边，属性为tl，tr，bl，br
+  }
 
+  initialize(options) {
     // this.renderAndResetBound = this.renderAndReset.bind(this);
     this.requestRenderAllBound = this.requestRenderAll.bind(this)
     this._initStatic(options)
+    this._initInteractive()
+  }
+
+  _initInteractive(){
+    this._currentTransform = null
+    this._groupSelector = null
+    // this._initEventListeners()
+
+    // this._initRetinaScaling()
+
+    // this.calcOffset()
   }
 
 

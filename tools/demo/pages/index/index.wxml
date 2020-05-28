@@ -1,6 +1,11 @@
 <canvas id="sugarjs"
         type="2d"
         disable-scroll="true"
+        bindtouchstart="touchstart"
+        bindtouchmove="touchmove"
+        bindtouchend="touchend"
+        bindtouchcancel="touchcancel"
+        bindlongtap="longtap"
         style='width: {{width}}px; height: {{height}}px;'>
 </canvas>
 
