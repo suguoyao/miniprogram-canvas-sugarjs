@@ -1,5 +1,7 @@
 # miniprogram-canvas-sugarjs
 
+[![](https://img.shields.io/npm/v/miniprogram-canvas-sugarjs)](https://www.npmjs.com/package/miniprogram-canvas-sugarjs)
+
 > 使用此组件需要依赖依赖开发者工具的 npm 构建。具体详情可查阅[微信小程序官方npm文档](https://developers.weixin.qq.com/miniprogram/dev/devtools/npm.html)。
 
 ## 介绍
