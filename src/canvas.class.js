@@ -34,6 +34,8 @@ class CanvasClass {
 
     this.viewportTransform = [1, 0, 0, 1, 0, 0]
     this.vptCoords = {} // 画布的四个角左边，属性为tl，tr，bl，br
+
+    this.initialize(options)
   }
 
   initialize(options) {
@@ -43,7 +45,7 @@ class CanvasClass {
     this._initInteractive()
   }
 
-  _initInteractive(){
+  _initInteractive() {
     this._currentTransform = null
     this._groupSelector = null
     // this._initEventListeners()
@@ -123,13 +125,27 @@ class CanvasClass {
 
   add() {
     this._objects.push.apply(this._objects, arguments)
-    // if (this._onObjectAdded) {
-    //   for (var i = 0, length = arguments.length; i < length; i++) {
-    //     this._onObjectAdded(arguments[i])
-    //   }
-    // }
+    if (this._onObjectAdded) {
+      for (let i = 0, length = arguments.length; i < length; i++) {
+        this._onObjectAdded(arguments[i])
+      }
+    }
     this.requestRenderAll()
     return this
+  }
+
+  _onObjectAdded(obj) {
+    // this.stateful && obj.setupState();
+    obj._set('canvas', this);
+    // obj.setCoords();
+    this.fire('object:added', {target: obj});
+    obj.fire('added');
+  }
+
+  _onObjectRemoved(obj) {
+    this.fire('object:removed', {target: obj});
+    obj.fire('removed');
+    delete obj.canvas;
   }
 
   /**

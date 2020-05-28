@@ -3,7 +3,7 @@
  */
 const {fill} = require('../utils/index');
 
-const _removeEventListener = (eventName, handler) => {
+const _removeEventListener = function (eventName, handler) {
   if (!this.__eventListeners[eventName]) {
     return;
   }
@@ -15,7 +15,7 @@ const _removeEventListener = (eventName, handler) => {
   }
 }
 
-const on = (eventName, handler) => {
+const on = function (eventName, handler) {
   if (!this.__eventListeners) {
     this.__eventListeners = {};
   }
@@ -32,7 +32,7 @@ const on = (eventName, handler) => {
   return this;
 }
 
-const off = (eventName, handler) => {
+const off = function (eventName, handler) {
   if (!this.__eventListeners) {
     return this;
   }
@@ -51,7 +51,7 @@ const off = (eventName, handler) => {
   return this;
 }
 
-const fire = (eventName, options) => {
+const fire = function (eventName, options) {
   if (!this.__eventListeners) {
     return this;
   }

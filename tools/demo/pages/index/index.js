@@ -42,10 +42,10 @@ Page({
         })
 
         this.sugar.on('object:added', (e) => {
-          console.log('object:added')
+          console.log('触发canvas事件object:added', e)
         })
         this.sugar.on('object:removed', (e) => {
-          console.log('object:removed')
+          console.log('触发canvas事件object:removed', e)
         })
       })
   },
