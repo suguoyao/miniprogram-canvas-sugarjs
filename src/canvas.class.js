@@ -87,6 +87,14 @@ class CanvasClass {
     this.viewportTransform = this.viewportTransform.slice();
   }
 
+  _isRetinaScaling() {
+    return (this.dpr !== 1 && this.enableRetinaScaling);
+  }
+
+  getRetinaScaling() {
+    return this._isRetinaScaling() ? this.dpr : 1;
+  }
+
   setBackgroundImage(image, callback, options) {
     return this.__setBgOverlayImage('backgroundImage', image, callback, options)
   }
@@ -100,7 +108,7 @@ class CanvasClass {
       loadImage(image, (img, isError) => {
         console.log('设置背景图', img);
         if (img) {
-          var instance = new ImageClass(img, options)
+          let instance = new ImageClass(img, options)
           this[property] = instance
           instance.canvas = this
         }
@@ -126,7 +134,7 @@ class CanvasClass {
   add() {
     this._objects.push.apply(this._objects, arguments)
     if (this._onObjectAdded) {
-      for (let i = 0, length = arguments.length; i < length; i++) {
+      for (let i = 0; i < arguments.length; i++) {
         this._onObjectAdded(arguments[i])
       }
     }
@@ -189,8 +197,13 @@ class CanvasClass {
     let activeObject = this._activeObject
 
     if (activeObject) {
-      // activeObject._renderControls(ctx) // TODO
+      console.log('drawControls, activeObject:', activeObject)
+      activeObject._renderControls(ctx)
     }
+  }
+
+  getZoom() {
+    return this.viewportTransform[0];
   }
 
   /**
@@ -213,7 +226,7 @@ class CanvasClass {
    * @return {Object} points
    */
   calcViewportBoundaries() {
-    var points = {}, width = this.width, height = this.height,
+    let points = {}, width = this.width, height = this.height,
       iVpt = invertTransform(this.viewportTransform)
     points.tl = transformPoint({x: 0, y: 0}, iVpt)
     points.br = transformPoint({x: width, y: height}, iVpt)
@@ -308,13 +321,12 @@ class CanvasClass {
         ctx.transform(v[0], v[1], v[2], v[3], v[4], v[5])
       }
       ctx.transform(1, 0, 0, 1, fill.offsetX || 0, fill.offsetY || 0)
-      // var m = fill.gradientTransform || fill.patternTransform
+      // let m = fill.gradientTransform || fill.patternTransform
       // m && ctx.transform(m[0], m[1], m[2], m[3], m[4], m[5])
       ctx.fill()
       ctx.restore()
     }
     if (object) {
-      console.log('has object and draw', object);
       ctx.save()
       if (needsVpt) {
         ctx.transform(v[0], v[1], v[2], v[3], v[4], v[5])
@@ -349,6 +361,78 @@ class CanvasClass {
       top: this.height / 2,
       left: this.width / 2
     }
+  }
+
+  /**
+   * 返回当前选中操作的对象
+   * @return {sugar.Object}
+   */
+  getActiveObject() {
+    return this._activeObject
+  }
+
+  /**
+   * 返回具有当前所选操作的对象数组
+   * @return {sugar.Object} active object
+   */
+  getActiveObjects() {
+    let active = this._activeObject
+    if (active) {
+      if (active.type === 'activeSelection' && active._objects) {
+        return active._objects.slice(0)
+      } else {
+        return [active]
+      }
+    }
+    return []
+  }
+
+  /**
+   * 将一个对象在画布中设置为选中激活状态
+   * @param {sugar.Object} object 设为激活的对象
+   * @param {Event} [e] 事件（触发"object:selected"时传递）
+   * @return {sugar.Canvas}
+   */
+  setActiveObject(object, e) {
+    let currentActives = this.getActiveObjects()
+    this._setActiveObject(object, e)
+    // this._fireSelectionEvents(currentActives, e) TODO
+    return this;
+  }
+
+  /**
+   * @private
+   * @param {Object} object 设为激活的对象
+   * @param {Event} [e] 事件（触发"object:selected"时传递）
+   * @return {Boolean} 如果对象为选中激活状态，返回true
+   */
+  _setActiveObject(object, e) {
+    if (this._activeObject === object) {
+      // 当前对象已选中
+      return false
+    }
+    if (!this._discardActiveObject(e, object)) {
+      return false
+    }
+    if (object.onSelect({e: e})) {
+      return false
+    }
+    this._activeObject = object
+    return true
+  }
+
+  /**
+   * @private
+   */
+  _discardActiveObject(e, object) {
+    let obj = this._activeObject;
+    if (obj) {
+      if (obj.onDeselect({e: e, object: object})) {
+        return false
+      }
+      this._activeObject = null
+    }
+    return true
   }
 }
 

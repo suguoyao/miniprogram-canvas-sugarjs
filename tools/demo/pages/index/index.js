@@ -1,6 +1,11 @@
 const sugar = require('../../components/sugarjs')
 const {windowWidth} = wx.getSystemInfoSync()
 
+const randomNumInRange = (min, max) => {
+  let range = max - min
+  return Math.round(Math.random() * range) + min
+}
+
 Page({
   data: {
     width: windowWidth,
@@ -57,31 +62,29 @@ Page({
       left: 100,
       top: 200,
       fontSize: 50,
-      // fontWeight: 800,
-      fill: 'blue'
+      fill: 'red'
     })
-    this.sugar.add(text)
-    // this.sugar.add(textbox).setActiveObject(textbox)
+    this.sugar.add(text).setActiveObject(text)
   },
   addImage1() {
     sugar.Image.fromURL('https://sugars.oss-cn-shenzhen.aliyuncs.com/diy/decorate/decorate1.png', (img) => {
       img.set({
-        // width: 750,
-        // height: 500,
-        left: 100,
-        top: 100,
+        width: 80,
+        height: 80,
+        left: randomNumInRange(0, this.data.width - 80),
+        top: randomNumInRange(0, this.data.height - 80),
         opacity: 0.5
       })
-      this.sugar.add(img)
+      this.sugar.add(img).setActiveObject(img)
     })
   },
   addImage2() {
     sugar.Image.fromURL('https://sugars.oss-cn-shenzhen.aliyuncs.com/diy/decorate/decorate9.png', (img) => {
       img.set({
-        // width: 750,
-        // height: 500,
+        left: randomNumInRange(0, this.data.width - 202),
+        top: randomNumInRange(0, this.data.height - 170),
       })
-      this.sugar.add(img)
+      this.sugar.add(img).setActiveObject(img)
     })
   },
   getCanvasObject() {
@@ -89,18 +92,22 @@ Page({
   },
 
   touchstart(e) {
-    console.log('小程序touchstart', e)
+    this.sugar.touchstart(e)
+    // console.log('小程序touchstart', e)
   },
   touchmove(e) {
-    console.log('小程序touchmove', e)
+    this.sugar.touchmove(e)
+    // console.log('小程序touchmove', e)
   },
   touchend(e) {
-    console.log('小程序touchend', e)
+    this.sugar.touchend(e)
+    // console.log('小程序touchend', e)
   },
   touchcancel(e) {
-    console.log('小程序touchcancel', e)
+    // console.log('小程序touchcancel', e)
   },
   longtap(e) {
-    console.log('小程序longtap', e)
+    this.sugar.longtap(e)
+    // console.log('小程序longtap', e)
   },
 })
