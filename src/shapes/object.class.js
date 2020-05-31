@@ -46,6 +46,7 @@ class ObjectClass {
     this.centeredScaling = false
     this.centeredRotation = true
     this.selectable = true
+    this.evented = true
     this.visible = true
     this.hasControls = true
     this.hasBorders = true

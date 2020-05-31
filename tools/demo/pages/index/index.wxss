@@ -1,3 +1,7 @@
+page{
+  padding-bottom: 500px;
+}
+
 .btn-group{
   display: flex;
   flex-wrap: wrap;
