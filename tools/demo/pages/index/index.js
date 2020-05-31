@@ -59,8 +59,8 @@ Page({
   },
   addText() {
     const text = new sugar.Text('Sugar苏', {
-      left: 100,
-      top: 200,
+      left: randomNumInRange(0, 200),
+      top: randomNumInRange(0, 400),
       fontSize: 50,
       fill: 'red'
     })

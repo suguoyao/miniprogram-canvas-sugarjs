@@ -145,7 +145,7 @@ class CanvasClass {
   _onObjectAdded(obj) {
     // this.stateful && obj.setupState();
     obj._set('canvas', this);
-    // obj.setCoords();
+    obj.setCoords();
     this.fire('object:added', {target: obj});
     obj.fire('added');
   }

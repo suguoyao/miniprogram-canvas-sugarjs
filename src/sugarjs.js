@@ -20,7 +20,7 @@ const ObjectInteractivity = require('./mixins/object_interactivity.mixin')
 const ObjectGeometry = require('./mixins/object_geometry.mixin')
 const TextStyles = require('./mixins/text_style.mixin')
 
-let Sugar = {}
+const Sugar = {}
 
 mergeMethods(CanvasClass, CommonMethods)
 mergeMethods(CanvasClass, Observable)

@@ -19,7 +19,9 @@ class TextClass extends ObjectClass {
     this.textAlign = 'left'
     this.fontStyle = 'normal'
     this.lineHeight = 1.16
+    this.charSpacing = 0
     this.styles = null
+    this._fontSizeMult = 1.13
 
     this._reNewline = /\r?\n/
     this._reSpaceAndTab = /[ \t\r]/
@@ -42,6 +44,17 @@ class TextClass extends ObjectClass {
       // 'deltaY',
       // 'textBackgroundColor',
     ]
+    this._dimensionAffectingProps = [
+      'fontSize',
+      'fontWeight',
+      'fontFamily',
+      'fontStyle',
+      'lineHeight',
+      'text',
+      'charSpacing',
+      'textAlign',
+      'styles',
+    ]
 
     this.initialize(text, options)
   }
@@ -50,21 +63,20 @@ class TextClass extends ObjectClass {
     this.styles = options ? (options.styles || {}) : {}
     this.text = text
     super.initialize(options)
-    // this.initDimensions();
-    // this.setCoords();
+    this.initDimensions();
+    this.setCoords();
     // this.setupState({propertySet: '_dimensionAffectingProps'});
   }
 
   initDimensions() {
     this._splitText();
     this._clearCache();
-    this.width = this.calcTextWidth() || this.MIN_TEXT_WIDTH;
-    if (this.textAlign.indexOf('justify') !== -1) {
-      // once text is measured we need to make space fatter to make justified text.
-      this.enlargeSpaces();
-    }
-    this.height = this.calcTextHeight();
-    this.saveState({propertySet: '_dimensionAffectingProps'})
+    // this.width = this.calcTextWidth() || this.MIN_TEXT_WIDTH;
+    // if (this.textAlign.indexOf('justify') !== -1) {
+    //   this.enlargeSpaces();
+    // }
+    // this.height = this.calcTextHeight();
+    // this.saveState({propertySet: '_dimensionAffectingProps'})
   }
 
   enlargeSpaces() {
@@ -94,6 +106,19 @@ class TextClass extends ObjectClass {
     }
   }
 
+  getFontCache(decl) {
+    let fontFamily = decl.fontFamily.toLowerCase();
+    if (!TextClass.charWidthsCache[fontFamily]) {
+      TextClass.charWidthsCache[fontFamily] = {};
+    }
+    let cache = TextClass.charWidthsCache[fontFamily],
+      cacheProp = decl.fontStyle.toLowerCase() + '_' + (decl.fontWeight + '').toLowerCase();
+    if (!cache[cacheProp]) {
+      cache[cacheProp] = {};
+    }
+    return cache[cacheProp];
+  }
+
   calcTextHeight() {
     let lineHeight, height = 0;
     for (let i = 0, len = this._textLines.length; i < len; i++) {
@@ -110,7 +135,7 @@ class TextClass extends ObjectClass {
 
     let line = this._textLines[lineIndex],
       maxHeight = this.getHeightOfChar(lineIndex, 0);
-    for (let i = 1, len = line.length; i < len; i++) {
+    for (let i = 1; i < line.length; i++) {
       maxHeight = Math.max(this.getHeightOfChar(lineIndex, i), maxHeight);
     }
 
@@ -141,6 +166,11 @@ class TextClass extends ObjectClass {
 
   missingNewlineOffset() {
     return 1;
+  }
+
+  getMeasuringContext() {
+    let _measuringContext = this.canvas && this.canvas.contextCache
+    return _measuringContext;
   }
 
   _splitText() {
@@ -240,7 +270,6 @@ class TextClass extends ObjectClass {
   }
 
   _getGraphemeBox(grapheme, lineIndex, charIndex, prevGrapheme, skipLeft) {
-
     let style = this.getCompleteStyleDeclaration(lineIndex, charIndex),
       prevStyle = prevGrapheme ? this.getCompleteStyleDeclaration(lineIndex, charIndex - 1) : {},
       info = this._measureChar(grapheme, style, prevGrapheme, prevStyle),
@@ -268,8 +297,8 @@ class TextClass extends ObjectClass {
   }
 
   _measureChar(_char, charStyle, previousChar, prevCharStyle) {
-    // first i try to return from cache
-    let fontCache = this.getFontCache(charStyle), fontDeclaration = this._getFontDeclaration(charStyle),
+    let fontCache = this.getFontCache(charStyle),
+      fontDeclaration = this._getFontDeclaration(charStyle),
       previousFontDeclaration = this._getFontDeclaration(prevCharStyle), couple = previousChar + _char,
       stylesAreEqual = fontDeclaration === previousFontDeclaration, width, coupleWidth, previousWidth,
       fontMultiplier = charStyle.fontSize / this.CACHE_FONT_SIZE, kernedWidth;
@@ -306,6 +335,21 @@ class TextClass extends ObjectClass {
     return {width: width * fontMultiplier, kernedWidth: kernedWidth * fontMultiplier};
   }
 
+  _getFontDeclaration(styleObject, forMeasuring) {
+    let style = styleObject || this, family = this.fontFamily,
+      fontIsGeneric = TextClass.genericFonts.indexOf(family.toLowerCase()) > -1;
+    let fontFamily = family === undefined ||
+    family.indexOf('\'') > -1 || family.indexOf(',') > -1 ||
+    family.indexOf('"') > -1 || fontIsGeneric
+      ? style.fontFamily : '"' + style.fontFamily + '"';
+    return [
+      style.fontStyle,
+      style.fontWeight,
+      forMeasuring ? this.CACHE_FONT_SIZE + 'px' : style.fontSize + 'px',
+      fontFamily
+    ].join(' ');
+  }
+
   _getWidthOfCharSpacing() {
     if (this.charSpacing !== 0) {
       return this.fontSize * this.charSpacing / 1000;
@@ -313,8 +357,36 @@ class TextClass extends ObjectClass {
     return 0;
   }
 
-  _render(ctx) {
+  _setTextStyles(ctx, charStyle, forMeasuring) {
+    ctx.textBaseline = 'alphabetic';
+    ctx.font = this._getFontDeclaration(charStyle, forMeasuring);
+  }
 
+  set(key, value) {
+    super.set(key, value)
+    // let needsDims = false;
+    // if (typeof key === 'object') {
+    //   for (let _key in key) {
+    //     needsDims = needsDims || this._dimensionAffectingProps.indexOf(_key) !== -1;
+    //   }
+    // } else {
+    //   needsDims = this._dimensionAffectingProps.indexOf(key) !== -1;
+    // }
+    // if (needsDims) {
+    //   this.initDimensions();
+    //   this.setCoords();
+    // }
+    return this;
+  }
+
+  _render(ctx) {
+    console.log('text _render')
+    // this._setTextStyles(ctx);
+    // this._renderTextLinesBackground(ctx);
+    // this._renderTextDecoration(ctx, 'underline');
+    // this._renderText(ctx);
+    // this._renderTextDecoration(ctx, 'overline');
+    // this._renderTextDecoration(ctx, 'linethrough');
   }
 
   render(ctx) {
@@ -323,7 +395,10 @@ class TextClass extends ObjectClass {
     }
     console.log('绘制文字', this);
     ctx.save()
-    ctx.font = `${this.fontSize}px ${this.fontFamily}`
+    // italic bold 20px cursive
+    ctx.font = `${this.fontStyle} ${this.fontWeight} ${this.fontSize}px ${this.fontFamily}`
+    this.width = ctx.measureText(this.text).width
+    this.height = this.calcTextHeight()
     ctx.fillStyle = this.fill
     ctx.fillText(this.text, this.left, this.top)
     // ctx.strokeText(this.text, this.left, this.top)
@@ -335,8 +410,11 @@ class TextClass extends ObjectClass {
     // if (this._shouldClearDimensionCache()) {
     // this.initDimensions();
     // }
-    // super.render(ctx)
+    super.render(ctx)
   }
 }
+
+TextClass.charWidthsCache = {}
+TextClass.genericFonts = ['sans-serif', 'serif', 'cursive', 'fantasy', 'monospace']
 
 module.exports = TextClass
