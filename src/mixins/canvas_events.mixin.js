@@ -42,6 +42,10 @@ module.exports = {
     var pointer = this._pointer;
     var shouldRender = this._shouldRender(target)
 
+    if (this._shouldClearSelection(e, target)) {
+      this.discardActiveObject(e)
+    }
+
     if (target) {
       var alreadySelected = target === this._activeObject;
       if (target.selectable) {
@@ -77,13 +81,14 @@ module.exports = {
     this._resetTransformEventData();
   },
   touchend: function (e) {
+    console.log(e)
     if (e.touches.length > 0) {
-      return;
+      return
     }
     let target
-    let transform = this._currentTransform
+    // let transform = this._currentTransform
     // let groupSelector = this._groupSelector
-    let shouldRender = false
+    // let shouldRender = false
     this._resetTransformEventData()
     this._target = this._currentTransform ? this._currentTransform.target : this.findTarget(e) || null
     target = this._target;
@@ -198,9 +203,9 @@ module.exports = {
       return this._pointer;
     }
 
-    var pointer = {
-      x: e.touches[0].x,
-      y: e.touches[0].y
+    let pointer = {
+      x: e.touches.length > 0 ? e.touches[0].x : e.changedTouches[0].x,
+      y: e.touches.length > 0 ? e.touches[0].y : e.changedTouches[0].y
     }
 
     return pointer

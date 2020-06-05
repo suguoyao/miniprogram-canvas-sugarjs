@@ -203,12 +203,22 @@ class CanvasClass {
     return this.ctx
   }
 
+  discardActiveObject(e) {
+    let currentActives = this.getActiveObjects(), activeObject = this.getActiveObject()
+    if (currentActives.length) {
+      this.fire('before:selection:cleared', {target: activeObject, e: e})
+    }
+    this._discardActiveObject(e)
+    this._fireSelectionEvents(currentActives, e)
+    return this
+  }
+
   /**
    * 清除实例的所有上下文（背景，主要内容等）
    * @return {sugar.Canvas} thisArg
    */
   clear() {
-    // this.discardActiveObject() // TODO
+    this.discardActiveObject()
     this._objects.length = 0
     this.backgroundImage = null
     this.backgroundColor = ''
@@ -216,6 +226,28 @@ class CanvasClass {
     // this.fire('canvas:cleared')
     this.requestRenderAll()
     return this
+  }
+
+  _shouldClearSelection(e, target) {
+    let activeObjects = this.getActiveObjects(),
+      activeObject = this._activeObject
+
+    return (
+      !target
+      ||
+      (target &&
+        activeObject &&
+        activeObjects.length > 1 &&
+        activeObjects.indexOf(target) === -1 &&
+        activeObject !== target)
+      ||
+      (target && !target.evented)
+      ||
+      (target &&
+        !target.selectable &&
+        activeObject &&
+        activeObject !== target)
+    )
   }
 
   _setupCurrentTransform(e, target, alreadySelected) {
