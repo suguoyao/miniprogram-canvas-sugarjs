@@ -53,23 +53,57 @@ module.exports = {
       //   true
       // );
       // target.__corner = corner;
-      // if (target === this._activeObject && (corner || !shouldGroup)) {
-      //   var control = target.controls[corner],
-      //     mouseDownHandler = control && control.getMouseDownHandler(e, target, control);
-      //   if (mouseDownHandler) {
-      //     mouseDownHandler(e, target, control);
-      //   }
-      //   this._setupCurrentTransform(e, target, alreadySelected);
-      // }
+      if (target === this._activeObject) {
+        this._setupCurrentTransform(e, target, alreadySelected);
+      }
     }
     this._handleEvent(e, 'start');
     (shouldRender) && this.requestRenderAll();
   },
   touchmove: function (e) {
+    if (!this.allowTouchScrolling) return
+    this._handleEvent(e, 'move:before');
 
+    let target;
+    if (!this._currentTransform) {
+      // target = this.findTarget(e) || null;
+      // this._setCursorFromEvent(e, target);
+      // this._fireOverOutEvents(target, e);
+    } else {
+      this._transformObject(e);
+    }
+    console.log('移动目标', this._currentTransform)
+    this._handleEvent(e, 'move');
+    this._resetTransformEventData();
   },
   touchend: function (e) {
-
+    if (e.touches.length > 0) {
+      return;
+    }
+    let target
+    let transform = this._currentTransform
+    // let groupSelector = this._groupSelector
+    let shouldRender = false
+    this._resetTransformEventData()
+    this._target = this._currentTransform ? this._currentTransform.target : this.findTarget(e) || null
+    target = this._target;
+    this._handleEvent(e, 'end:before');
+    // if (transform) {
+    // this._finalizeCurrentTransform(e);
+    // shouldRender = transform.actionPerformed;
+    // }
+    if (target) {
+      target.isMoving = false;
+    }
+    this._handleEvent(e, 'end');
+    // this._groupSelector = null;
+    this._currentTransform = null
+    // if (shouldRender) {
+    //   this.requestRenderAll();
+    // } else if (!isClick) {
+    //   this.renderTop();
+    // }
+    this._resetTransformEventData()
   },
   longtap: function (e) {
 
@@ -200,5 +234,53 @@ module.exports = {
     // }
     // return (target.containsPoint(xy) || !!target._findTargetCorner(pointer, true));
     return target.left <= xy.x && xy.x <= (target.left + target.width) && target.top <= xy.y && xy.y <= (target.top + target.height)
+  },
+
+  _transformObject: function (e) {
+    let pointer = this.getPointer(e),
+      transform = this._currentTransform;
+
+    transform.reset = false;
+    transform.target.isMoving = true;
+
+    this._performTransformAction(e, transform, pointer);
+    transform.actionPerformed && this.requestRenderAll();
+  },
+
+  _performTransformAction: function (e, transform, pointer) {
+    let x = pointer.x,
+      y = pointer.y,
+      action = transform.action,
+      actionPerformed = false,
+      options = {
+        target: transform.target,
+        e: e,
+        transform: transform,
+        pointer: pointer
+      };
+
+    if (action === 'drag') {
+      actionPerformed = this._translateObject(x, y);
+      if (actionPerformed) {
+        // this._fire('moving', options);
+        // this.setCursor(options.target.moveCursor || this.moveCursor);
+      }
+    }
+    transform.actionPerformed = transform.actionPerformed || actionPerformed;
+  },
+
+  _resetTransformEventData: function () {
+    this._target = null;
+    this._pointer = null;
+    this._absolutePointer = null;
+  },
+
+  _beforeTransform: function (e) {
+    let t = this._currentTransform;
+    // this.stateful && t.target.saveState();
+    this.fire('before:transform', {
+      e: e,
+      transform: t,
+    });
   }
 }

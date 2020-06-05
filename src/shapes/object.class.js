@@ -11,8 +11,8 @@ const {
 class ObjectClass {
   constructor(options) {
     this.type = 'object'
-    // this.originX = 'left'
-    // this.originY = 'top'
+    this.originX = 'left'
+    this.originY = 'top'
     this.top = 0
     this.left = 0
     this.width = 0

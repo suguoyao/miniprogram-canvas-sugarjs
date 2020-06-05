@@ -35,6 +35,8 @@ class CanvasClass {
     this.viewportTransform = [1, 0, 0, 1, 0, 0]
     this.vptCoords = {} // 画布的四个角左边，属性为tl，tr，bl，br
 
+    this.allowTouchScrolling = true
+
     this.initialize(options)
   }
 
@@ -188,6 +190,62 @@ class CanvasClass {
     // this.fire('canvas:cleared')
     this.requestRenderAll()
     return this
+  }
+
+  _setupCurrentTransform(e, target, alreadySelected) {
+    if (!target) {
+      return;
+    }
+
+    let pointer = this.getPointer(e), corner = target.__corner,
+      // actionHandler = !!corner && target.controls[corner].getActionHandler(),
+      // action = this._getActionFromCorner(alreadySelected, corner, e, target),
+      // origin = this._getOriginFromCorner(target, corner),
+      transform = {
+        target: target,
+        // action: action,
+        action: 'drag',
+        // actionHandler: actionHandler,
+        corner: corner,
+        scaleX: target.scaleX,
+        scaleY: target.scaleY,
+        skewX: target.skewX,
+        skewY: target.skewY,
+        offsetX: pointer.x - target.left,
+        offsetY: pointer.y - target.top,
+        // originX: origin.x,
+        // originY: origin.y,
+        originX: target.originX,
+        originY: target.originY,
+        ex: pointer.x,
+        ey: pointer.y,
+        lastX: pointer.x,
+        lastY: pointer.y,
+        // theta: degreesToRadians(target.angle),
+        width: target.width * target.scaleX,
+      };
+
+    // if (this._shouldCenterTransform(target, action, altKey)) {
+    //   transform.originX = 'center';
+    //   transform.originY = 'center';
+    // }
+    // transform.original.originX = origin.x;
+    // transform.original.originY = origin.y;
+    this._currentTransform = transform;
+    this._beforeTransform(e);
+  }
+
+  _translateObject(x, y) {
+    let transform = this._currentTransform,
+      target = transform.target,
+      newLeft = x - transform.offsetX,
+      newTop = y - transform.offsetY,
+      moveX = !target.get('lockMovementX') && target.left !== newLeft,
+      moveY = !target.get('lockMovementY') && target.top !== newTop
+
+    moveX && target.set('left', newLeft)
+    moveY && target.set('top', newTop)
+    return moveX || moveY
   }
 
   /**
