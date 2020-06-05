@@ -71,6 +71,9 @@ class TextClass extends ObjectClass {
   initDimensions() {
     this._splitText();
     this._clearCache();
+    // this.width = this.canvas.ctx.measureText(this.text).width || this.MIN_TEXT_WIDTH
+    this.height = this.calcTextHeight()
+
     // this.width = this.calcTextWidth() || this.MIN_TEXT_WIDTH;
     // if (this.textAlign.indexOf('justify') !== -1) {
     //   this.enlargeSpaces();
@@ -380,29 +383,21 @@ class TextClass extends ObjectClass {
   }
 
   _render(ctx) {
-    console.log('text _render')
-    // this._setTextStyles(ctx);
-    // this._renderTextLinesBackground(ctx);
-    // this._renderTextDecoration(ctx, 'underline');
-    // this._renderText(ctx);
-    // this._renderTextDecoration(ctx, 'overline');
-    // this._renderTextDecoration(ctx, 'linethrough');
+    console.log('_render绘制文字', this);
+    ctx.save()
+    // italic bold 20px cursive
+    ctx.font = `${this.fontStyle} ${this.fontWeight} ${this.fontSize}px ${this.fontFamily}`
+    this.width = ctx.measureText(this.text).width || this.MIN_TEXT_WIDTH
+    ctx.fillStyle = this.fill
+    ctx.fillText(this.text, this.left, this.top + this.fontSize)
+    // ctx.strokeText(this.text, this.left, this.top)
+    ctx.restore();
   }
 
   render(ctx) {
     if (!this.visible) {
       return;
     }
-    console.log('绘制文字', this);
-    ctx.save()
-    // italic bold 20px cursive
-    ctx.font = `${this.fontStyle} ${this.fontWeight} ${this.fontSize}px ${this.fontFamily}`
-    this.width = ctx.measureText(this.text).width
-    this.height = this.calcTextHeight()
-    ctx.fillStyle = this.fill
-    ctx.fillText(this.text, this.left, this.top)
-    // ctx.strokeText(this.text, this.left, this.top)
-    ctx.restore();
 
     // if (this.canvas && this.canvas.skipOffscreen && !this.group && !this.isOnScreen()) {
     //   return;

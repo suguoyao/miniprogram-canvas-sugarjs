@@ -145,7 +145,7 @@ class ObjectClass {
     }
   }
 
-  _render(ctx) {
+  _render() {
 
   }
 
@@ -204,6 +204,20 @@ class ObjectClass {
     // opacity *= this.group.getObjectOpacity();
     // }
     return opacity;
+  }
+
+  _set(key, value) {
+    if (key === 'scaleX' && value < 0) {
+      this.flipX = !this.flipX;
+      value *= -1;
+    } else if (key === 'scaleY' && value < 0) {
+      this.flipY = !this.flipY;
+      value *= -1;
+    }
+
+    this[key] = value;
+
+    return this
   }
 
   _setOpacity(ctx) {

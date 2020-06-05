@@ -138,7 +138,7 @@ module.exports = {
     ctx.save();
     ctx.strokeStyle = styleOverride.borderColor || this.borderColor;
     this._setLineDash(ctx, styleOverride.borderDashArray || this.borderDashArray, null);
-
+    // console.log('---------drawBorders', this.left, this.top)
     ctx.strokeRect(
       // -width / 2,
       // -height / 2,

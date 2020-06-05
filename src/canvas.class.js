@@ -145,6 +145,7 @@ class CanvasClass {
   _onObjectAdded(obj) {
     // this.stateful && obj.setupState();
     obj._set('canvas', this);
+    console.log('为object设置canvas属性')
     obj.setCoords();
     this.fire('object:added', {target: obj});
     obj.fire('added');
@@ -264,8 +265,8 @@ class CanvasClass {
     this.calcViewportBoundaries()
     this.clearContext(ctx)
     // setImageSmoothing(ctx, this.imageSmoothingEnabled);
-    // this.fire('before:render', {ctx: ctx,});
-    console.log('before:render');
+    this.fire('before:render', {ctx: ctx,});
+    // console.log('before:render');
     this._renderBackground(ctx);
 
     ctx.save();
@@ -280,8 +281,8 @@ class CanvasClass {
     if (this.controlsAboveOverlay) {
       this.drawControls(ctx)
     }
-    console.log('renderCanvas after:render');
-    // this.fire('after:render', {ctx: ctx,})
+    // console.log('renderCanvas after:render');
+    this.fire('after:render', {ctx: ctx,})
   }
 
   /**

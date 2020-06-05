@@ -62,7 +62,7 @@ Page({
       left: randomNumInRange(0, 200),
       top: randomNumInRange(0, 400),
       fontSize: 50,
-      fill: 'red'
+      fill: '#409EFF'
     })
     this.sugar.add(text).setActiveObject(text)
   },
