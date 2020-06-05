@@ -73,7 +73,7 @@ Page({
 2. 图层类
 - [x] 基类ObjectClass
 - [x] 图片ImageClass
-- [ ] 文本TextClass
+- [x] 文本TextClass
 - [ ] 矩形RectClass
 - [ ] 三角形TriangleClass
 - [ ] 多边形PolygonClass
@@ -87,7 +87,7 @@ Page({
 3. 操作
 - [ ] 增删
 - [x] 点击图层进入选中状态（显示图层边框控件）
-- [ ] 拖动
+- [x] 拖动
 - [ ] 缩放
 - [ ] 旋转
 - [ ] 翻转
@@ -97,7 +97,7 @@ Page({
 
 4. 事件监听
 - [x] canvas初始化周期事件
-- [ ] 手指触摸事件
+- [x] 手指触摸事件
 - [ ] 清单3中的操作事件的监听
 - [ ] 其他...
 
