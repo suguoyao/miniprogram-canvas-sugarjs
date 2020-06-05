@@ -35,6 +35,7 @@ class CanvasClass {
     this.viewportTransform = [1, 0, 0, 1, 0, 0]
     this.vptCoords = {} // 画布的四个角左边，属性为tl，tr，bl，br
 
+    this.preserveObjectStacking = false
     this.allowTouchScrolling = true
 
     this.initialize(options)
@@ -144,19 +145,44 @@ class CanvasClass {
     return this
   }
 
+  remove() {
+    let objects = this._objects
+    let index
+    let somethingRemoved = false
+
+    for (let i = 0; i < arguments.length; i++) {
+      index = objects.indexOf(arguments[i])
+
+      if (index !== -1) {
+        somethingRemoved = true
+        objects.splice(index, 1)
+        this._onObjectRemoved && this._onObjectRemoved(arguments[i])
+      }
+    }
+
+    somethingRemoved && this.requestRenderAll()
+    return this
+  }
+
   _onObjectAdded(obj) {
-    // this.stateful && obj.setupState();
+    // this.stateful && obj.setupState()
     obj._set('canvas', this);
     console.log('为object设置canvas属性')
     obj.setCoords();
-    this.fire('object:added', {target: obj});
+    this.fire('object:added', {target: obj})
     obj.fire('added');
   }
 
   _onObjectRemoved(obj) {
-    this.fire('object:removed', {target: obj});
-    obj.fire('removed');
-    delete obj.canvas;
+    if (obj === this._activeObject) {
+      this.fire('before:selection:cleared', {target: obj})
+      this._discardActiveObject()
+      this.fire('selection:cleared', {target: obj})
+      obj.fire('deselected');
+    }
+    this.fire('object:removed', {target: obj})
+    obj.fire('removed')
+    delete obj.canvas
   }
 
   /**
@@ -307,8 +333,33 @@ class CanvasClass {
    * @return {sugar.Canvas} instance
    */
   renderAll() {
-    this.renderCanvas(this.ctx, this._objects)
+    this.renderCanvas(this.ctx, this._chooseObjectsToRender())
     return this
+  }
+
+  _chooseObjectsToRender() {
+    let activeObjects = this.getActiveObjects(),
+      object, objsToRender, activeGroupObjects
+
+    if (activeObjects.length > 0 && !this.preserveObjectStacking) {
+      objsToRender = []
+      activeGroupObjects = []
+      for (let i = 0; i < this._objects.length; i++) {
+        object = this._objects[i]
+        if (activeObjects.indexOf(object) === -1) {
+          objsToRender.push(object)
+        } else {
+          activeGroupObjects.push(object)
+        }
+      }
+      if (activeObjects.length > 1) {
+        this._activeObject._objects = activeGroupObjects
+      }
+      objsToRender.push.apply(objsToRender, activeGroupObjects)
+    } else {
+      objsToRender = this._objects
+    }
+    return objsToRender
   }
 
   /**
@@ -455,7 +506,7 @@ class CanvasClass {
   setActiveObject(object, e) {
     let currentActives = this.getActiveObjects()
     this._setActiveObject(object, e)
-    // this._fireSelectionEvents(currentActives, e) TODO
+    this._fireSelectionEvents(currentActives, e)
     return this;
   }
 
@@ -492,6 +543,43 @@ class CanvasClass {
       this._activeObject = null
     }
     return true
+  }
+
+  _fireSelectionEvents(oldObjects, e) {
+    let somethingChanged = false,
+      objects = this.getActiveObjects(),
+      added = [],
+      removed = [],
+      opt = {e: e}
+
+    oldObjects.forEach((oldObject) => {
+      if (objects.indexOf(oldObject) === -1) {
+        somethingChanged = true
+        oldObject.fire('deselected', opt)
+        removed.push(oldObject)
+      }
+    });
+    objects.forEach((object) => {
+      if (oldObjects.indexOf(object) === -1) {
+        somethingChanged = true
+        object.fire('selected', opt)
+        added.push(object)
+      }
+    });
+    if (oldObjects.length > 0 && objects.length > 0) {
+      opt.selected = added
+      opt.deselected = removed
+      opt.updated = added[0] || removed[0]
+      opt.target = this._activeObject
+      somethingChanged && this.fire('selection:updated', opt)
+    } else if (objects.length > 0) {
+      opt.selected = added
+      opt.target = this._activeObject
+      this.fire('selection:created', opt)
+    } else if (oldObjects.length > 0) {
+      opt.deselected = removed
+      this.fire('selection:cleared', opt)
+    }
   }
 }
 

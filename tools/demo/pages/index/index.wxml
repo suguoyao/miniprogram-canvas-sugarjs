@@ -14,4 +14,5 @@
   <button bindtap="addImage1">图片1</button>
   <button bindtap="addImage2">图片2</button>
   <button bindtap="addText">文本</button>
+  <button bindtap="deleteObject">删除图层</button>
 </view>

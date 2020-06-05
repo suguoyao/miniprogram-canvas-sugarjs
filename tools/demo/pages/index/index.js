@@ -10,6 +10,7 @@ Page({
   data: {
     width: windowWidth,
     height: 500,
+    selectObj: null,
   },
   onReady() {
     // this.sugar = createCanvasSugarJS({
@@ -32,6 +33,8 @@ Page({
           height: this.data.height,
           backgroundColor: 'skyblue'
         })
+        // this.sugar.preserveObjectStacking = true // 禁止选中图层时自动置于顶部
+
         console.log('sugar.Canvas初始化', this.sugar)
         // this.sugar.setBackgroundImage('http://g.hiphotos.baidu.com/zhidao/pic/item/6a600c338744ebf844eebc72d9f9d72a6159a7e4.jpg', this.sugar.renderAll.bind(this.sugar), {
         //   width: this.data.width,
@@ -46,6 +49,18 @@ Page({
           this.sugar.setBackgroundImage(img, this.sugar.renderAll.bind(this.sugar))
         })
 
+        this.sugar.on('selection:created', (e) => {
+          console.log('触发canvas事件selection:created', e.target)
+          // this.setData({selectObj: e.target})
+        })
+        this.sugar.on('selection:updated', (e) => {
+          console.log('触发canvas事件selection:updated', e.target)
+          // this.setData({selectObj: e.target})
+        })
+        this.sugar.on('selection:cleared', (e) => {
+          console.log('触发canvas事件selection:cleared')
+          // this.setData({selectObj: null})
+        })
         this.sugar.on('object:added', (e) => {
           console.log('触发canvas事件object:added', e)
         })
@@ -90,7 +105,12 @@ Page({
   getCanvasObject() {
     console.log(this.sugar)
   },
-
+  deleteObject() {
+    const activeObject = this.sugar.getActiveObject()
+    if (!activeObject) return
+    this.sugar.remove(activeObject)
+    // this.sugar.renderAll()
+  },
   touchstart(e) {
     this.sugar.touchstart(e)
     // console.log('小程序touchstart', e)
