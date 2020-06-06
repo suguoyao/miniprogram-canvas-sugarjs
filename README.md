@@ -74,12 +74,12 @@ Page({
 - [x] 基类ObjectClass
 - [x] 图片ImageClass
 - [x] 文本TextClass
-- [ ] 矩形RectClass
-- [ ] 三角形TriangleClass
-- [ ] 多边形PolygonClass
+- [x] 矩形RectClass
+- [x] 三角形TriangleClass
+- [x] 多边形PolygonClass
+- [x] 圆CircleClass
+- [x] 椭圆EllipseClass
 - [ ] 直线LineClass
-- [ ] 圆CircleClass
-- [ ] 椭圆EllipseClass
 - [ ] 群组GroupClass
 - [ ] 其他...
 
@@ -88,7 +88,7 @@ Page({
 - [x] 增删
 - [x] 点击图层进入选中状态（显示图层边框控件）
 - [x] 拖动
-- [ ] 缩放
+- [x] 缩放
 - [x] 旋转
 - [x] 翻转
 - [ ] 图层层级管理（上移、下移、置顶、置底）
@@ -105,6 +105,7 @@ Page({
 - [ ] 状态存储（撤销undo、恢复redo）
 - [ ] 导入、导出canvas数据
 - [x] toDataURL生成图片
+- [ ] 手势缩放、旋转
 - [ ] 动画
 - [ ] 其他...
 
