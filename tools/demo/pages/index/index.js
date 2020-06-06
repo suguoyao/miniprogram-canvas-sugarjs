@@ -162,6 +162,42 @@ Page({
 
     this.sugar.add(rect)
   },
+  addPolygon() {
+    const points = [{
+      x: 3, y: 4
+    }, {
+      x: 16, y: 3
+    }, {
+      x: 30, y: 5
+    }, {
+      x: 25, y: 55
+    }, {
+      x: 19, y: 44
+    }, {
+      x: 15, y: 30
+    }, {
+      x: 15, y: 55
+    }, {
+      x: 9, y: 55
+    }, {
+      x: 6, y: 53
+    }, {
+      x: -2, y: 55
+    }, {
+      x: -4, y: 40
+    }, {
+      x: 0, y: 20
+    }]
+    const polygon = new sugar.Polygon(points, {
+      left: 100,
+      top: 50,
+      // scaleX: 4,
+      // scaleY: 4,
+      fill: '#D81B60'
+    })
+
+    this.sugar.add(polygon)
+  },
   addTriangle() {
     const triangle = new sugar.Triangle({
       left: 55,

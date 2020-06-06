@@ -21,6 +21,7 @@
   <button class="black" bindtap="zoomUp">放大</button>
   <button class="black" bindtap="zoomOut">缩小</button>
   <button class="black" bindtap="addRect">矩形</button>
+  <button class="black" bindtap="addPolygon">多边形</button>
   <button class="black" bindtap="addTriangle">三角形</button>
   <button class="black" bindtap="addCircle">圆</button>
   <button class="red" bindtap="deleteObject">删除图层</button>
