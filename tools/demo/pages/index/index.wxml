@@ -11,6 +11,7 @@
 
 <view class="btn-group">
   <button class="green" bindtap="getCanvasObject">获取Canvas</button>
+  <button class="green" bindtap="toDataURL">toDataURL</button>
   <button class="black" bindtap="addImage1">图片1</button>
   <button class="black" bindtap="addImage2">图片2</button>
   <button class="black" bindtap="addText">文本</button>
@@ -18,3 +19,7 @@
   <button class="black" bindtap="flip">翻转</button>
   <button class="red" bindtap="deleteObject">删除图层</button>
 </view>
+
+<block wx:if="{{dataUrl}}">
+  <image src="{{dataUrl}}"></image>
+</block>

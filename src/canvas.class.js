@@ -612,6 +612,28 @@ class CanvasClass {
       this.fire('selection:cleared', opt)
     }
   }
+
+  toDataURL(options) {
+    try {
+      options || (options = {})
+
+      let format = options.format || 'jpeg'
+      let quality = options.quality || 0.5
+
+      /**
+       * toDataURL 微信基础库 2.11.0 开始支持
+       *
+       * string type
+       * 图片格式，默认为 image/png
+       *
+       * number encoderOptions
+       * 在指定图片格式为 image/jpeg 或 image/webp的情况下，可以从 0 到 1 的区间内选择图片的质量。如果超出取值范围，将会使用默认值 0.92。其他参数会被忽略。
+       */
+      return this.canvas.toDataURL(`image/${format}`, quality)
+    } catch (e) {
+      throw new Error('当前微信基础库不支持toDataURL，2.11.0开始支持')
+    }
+  }
 }
 
 module.exports = CanvasClass

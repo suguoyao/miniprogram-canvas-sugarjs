@@ -11,6 +11,7 @@ Page({
     width: windowWidth,
     height: 500,
     selectObj: null,
+    dataUrl: null,
   },
   onReady() {
     // this.sugar = createCanvasSugarJS({
@@ -121,6 +122,11 @@ Page({
     if (!activeObject) return
     this.sugar.remove(activeObject)
     this.sugar.renderAll()
+  },
+  toDataURL() {
+    this.setData({
+      dataUrl: this.sugar.toDataURL()
+    })
   },
   touchstart(e) {
     this.sugar.touchstart(e)

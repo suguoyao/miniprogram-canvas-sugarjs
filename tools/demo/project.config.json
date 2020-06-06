@@ -25,7 +25,7 @@
 		}
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.10.4",
+	"libVersion": "2.11.1",
 	"appid": "wx29169e6dd665fd55",
 	"projectname": "miniprogram-demo",
 	"isGameTourist": false,
