@@ -78,9 +78,9 @@ class ImageClass extends ObjectClass {
       sX = Math.max(0, this.cropX * this._filterScalingX),
       sY = Math.max(0, this.cropY * this._filterScalingY)
     // console.log(sX, sY, sW, sH, dx, dy, dW, dH);
-    // elementToDraw && ctx.drawImage(elementToDraw, sX, sY, sW, sH, dx, dy, dW, dH)
+    elementToDraw && ctx.drawImage(elementToDraw, sX, sY, sW, sH, dx, dy, dW, dH)
     // elementToDraw && ctx.drawImage(elementToDraw, sX, sY, sW, sH, 0, 0, dW, dH)
-    elementToDraw && ctx.drawImage(elementToDraw, this.left, this.top, sW, sH)
+    // elementToDraw && ctx.drawImage(elementToDraw, this.left, this.top, sW, sH)
   }
 
   _stroke(ctx) {

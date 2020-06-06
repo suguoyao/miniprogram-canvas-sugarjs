@@ -76,7 +76,7 @@ module.exports = {
     } else {
       this._transformObject(e);
     }
-    console.log('移动目标', this._currentTransform)
+    // console.log('移动目标', this._currentTransform)
     this._handleEvent(e, 'move');
     this._resetTransformEventData();
   },

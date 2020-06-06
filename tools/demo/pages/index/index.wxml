@@ -10,9 +10,11 @@
 </canvas>
 
 <view class="btn-group">
-  <button bindtap="getCanvasObject">获取Canvas</button>
-  <button bindtap="addImage1">图片1</button>
-  <button bindtap="addImage2">图片2</button>
-  <button bindtap="addText">文本</button>
-  <button bindtap="deleteObject">删除图层</button>
+  <button class="green" bindtap="getCanvasObject">获取Canvas</button>
+  <button class="black" bindtap="addImage1">图片1</button>
+  <button class="black" bindtap="addImage2">图片2</button>
+  <button class="black" bindtap="addText">文本</button>
+  <button class="black" bindtap="rotate">旋转</button>
+  <button class="black" bindtap="flip">翻转</button>
+  <button class="red" bindtap="deleteObject">删除图层</button>
 </view>

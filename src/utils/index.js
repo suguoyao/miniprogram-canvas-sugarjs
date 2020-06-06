@@ -91,10 +91,12 @@ function toFixed(number, fractionDigits) {
 }
 
 function mergeMethods(a, b) {
-  // for (const k in b) {
-  //   a.prototype[k] = b[k]
-  // }
-  return Object.assign(a.prototype, b)
+  for (const prop in b) {
+    if (b.hasOwnProperty(prop)) {
+      a.prototype[prop] = b[prop]
+    }
+  }
+  return a
 }
 
 module.exports = {

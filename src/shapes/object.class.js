@@ -44,7 +44,7 @@ class ObjectClass {
     this.cornerStyle = 'rect'
     this.cornerDashArray = null
     this.centeredScaling = false
-    this.centeredRotation = true
+    this.centeredRotation = true // 如果为true，则将以物体中心为原点
     this.selectable = true
     this.evented = true
     this.visible = true
@@ -100,7 +100,7 @@ class ObjectClass {
     ctx.save()
     // this._setupCompositeOperation(ctx)
     this.drawSelectionBackground(ctx)
-    // this.transform(ctx)
+    this.transform(ctx)
     // this._setOpacity(ctx)
     // this._setShadow(ctx, this)
     // if (this.shouldCache()) {
@@ -114,6 +114,15 @@ class ObjectClass {
     // }
     // }
     ctx.restore()
+  }
+
+  transform(ctx) {
+    let m = this.calcOwnMatrix()
+    // if (this.group && !this.group._transformDone) {
+    //   m = this.calcTransformMatrix();
+    // }
+    // console.log(m)
+    ctx.transform(m[0], m[1], m[2], m[3], m[4], m[5]);
   }
 
   drawObject(ctx, forClipping) {
@@ -133,6 +142,34 @@ class ObjectClass {
     // this._drawClipPath(ctx)
     this.fill = originalFill
     this.stroke = originalStroke
+  }
+
+  _removeShadow(ctx) {
+    if (!this.shadow) {
+      return;
+    }
+
+    ctx.shadowColor = '';
+    ctx.shadowBlur = ctx.shadowOffsetX = ctx.shadowOffsetY = 0;
+  }
+
+  _applyPatternGradientTransform(ctx, filler) {
+    if (!filler || !filler.toLive) {
+      return {offsetX: 0, offsetY: 0};
+    }
+    var t = filler.gradientTransform || filler.patternTransform;
+    var offsetX = -this.width / 2 + filler.offsetX || 0,
+      offsetY = -this.height / 2 + filler.offsetY || 0;
+
+    if (filler.gradientUnits === 'percentage') {
+      ctx.transform(this.width, 0, 0, this.height, offsetX, offsetY);
+    } else {
+      ctx.transform(1, 0, 0, 1, offsetX, offsetY);
+    }
+    if (t) {
+      ctx.transform(t[0], t[1], t[2], t[3], t[4], t[5]);
+    }
+    return {offsetX: offsetX, offsetY: offsetY};
   }
 
   _renderPaintInOrder(ctx) {
@@ -207,11 +244,17 @@ class ObjectClass {
   }
 
   _set(key, value) {
+    console.log('set scaleX')
+    let shouldConstrainValue = (key === 'scaleX' || key === 'scaleY')
+
+    if (shouldConstrainValue) {
+      value = this._constrainScale(value);
+    }
     if (key === 'scaleX' && value < 0) {
-      this.flipX = !this.flipX;
+      this.flipX = !this.flipX
       value *= -1;
     } else if (key === 'scaleY' && value < 0) {
-      this.flipY = !this.flipY;
+      this.flipY = !this.flipY
       value *= -1;
     }
 
@@ -298,6 +341,22 @@ class ObjectClass {
     }
     drawControls && this.drawControls(ctx, styleOverride);
     ctx.restore();
+  }
+
+  rotate(angle) {
+    let shouldCenterOrigin = (this.originX !== 'center' || this.originY !== 'center') && this.centeredRotation;
+
+    if (shouldCenterOrigin) {
+      this._setOriginToCenter();
+    }
+
+    this.set('angle', angle);
+
+    if (shouldCenterOrigin) {
+      this._resetOrigin();
+    }
+
+    return this
   }
 }
 

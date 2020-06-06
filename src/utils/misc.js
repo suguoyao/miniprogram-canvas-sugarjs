@@ -260,10 +260,10 @@ const qrDecompose = (a) => {
 }
 
 const rotateVector = (vector, radians) => {
-  let sin = sin(radians),
-    cos = cos(radians),
-    rx = vector.x * cos - vector.y * sin,
-    ry = vector.x * sin + vector.y * cos;
+  let s = sin(radians),
+    c = cos(radians),
+    rx = vector.x * c - vector.y * s,
+    ry = vector.x * s + vector.y * c;
   return {
     x: rx,
     y: ry
@@ -281,9 +281,9 @@ const calcRotateMatrix = (options) => {
     return [1, 0, 0, 1, 0, 0].concat();
   }
   let theta = degreesToRadians(options.angle),
-    cos = cos(theta),
-    sin = sin(theta);
-  return [cos, sin, -sin, cos, 0, 0];
+    c = cos(theta),
+    s = sin(theta);
+  return [c, s, -s, c, 0, 0];
 }
 
 const composeMatrix = (options) => {

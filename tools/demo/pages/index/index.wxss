@@ -5,12 +5,62 @@ page{
 .btn-group{
   display: flex;
   flex-wrap: wrap;
-  padding: 20px;
+  padding: 5px;
 }
 
 .btn-group button{
-  font-size: 12px;
-  padding: 5px;
-  line-height: 20px;
   margin: 5px;
+}
+
+button{
+  position: relative;
+  border: 0rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0 30rpx;
+  font-size: 28rpx;
+  height: 64rpx;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  overflow: visible;
+  margin-left: initial;
+  transform: translate(0rpx, 0rpx);
+  margin-right: initial;
+  border-radius: 100px;
+  color: #fff;
+  box-shadow: 6rpx 6rpx 8rpx rgba(26, 26, 26, 0.2);
+}
+
+button.button-hover {
+  transform: translate(1rpx, 1rpx);
+  color: #fff;
+}
+
+button.orange{
+  background-color: #f37b1d;
+}
+
+button.black{
+  background-color: #666;
+}
+
+button.white{
+  background-color: #fff;
+}
+
+button.green{
+  background-color: #39b54a;
+}
+
+button.red{
+  background-color: #e54d42;
+}
+
+button:after{
+  display: none;
+  border: 0;
+  outline: 0;
 }

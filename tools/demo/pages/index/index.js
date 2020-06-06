@@ -73,22 +73,19 @@ Page({
     // this.sugar.add()
   },
   addText() {
-    const text = new sugar.Text('Sugar苏', {
+    const text = new sugar.Text('Sugar苏\n换行', {
       left: randomNumInRange(0, 200),
       top: randomNumInRange(0, 400),
       fontSize: 50,
-      fill: '#409EFF'
+      fill: 'yellow'
     })
     this.sugar.add(text).setActiveObject(text)
   },
   addImage1() {
     sugar.Image.fromURL('https://sugars.oss-cn-shenzhen.aliyuncs.com/diy/decorate/decorate1.png', (img) => {
       img.set({
-        width: 80,
-        height: 80,
         left: randomNumInRange(0, this.data.width - 80),
         top: randomNumInRange(0, this.data.height - 80),
-        opacity: 0.5
       })
       this.sugar.add(img).setActiveObject(img)
     })
@@ -105,11 +102,25 @@ Page({
   getCanvasObject() {
     console.log(this.sugar)
   },
+  rotate() {
+    const activeObject = this.sugar.getActiveObject()
+    if (!activeObject) return
+    activeObject.rotate(activeObject.angle === 360 ? 90 : activeObject.angle + 90)
+    this.sugar.renderAll()
+  },
+  flip() {
+    const activeObject = this.sugar.getActiveObject()
+    if (!activeObject) return
+    activeObject.set({
+      scaleX: -activeObject.scaleX
+    })
+    this.sugar.renderAll()
+  },
   deleteObject() {
     const activeObject = this.sugar.getActiveObject()
     if (!activeObject) return
     this.sugar.remove(activeObject)
-    // this.sugar.renderAll()
+    this.sugar.renderAll()
   },
   touchstart(e) {
     this.sugar.touchstart(e)
