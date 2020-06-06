@@ -313,7 +313,7 @@ class CanvasClass {
     let activeObject = this._activeObject
 
     if (activeObject) {
-      console.log('drawControls, activeObject:', activeObject)
+      // console.log('drawControls, activeObject:', activeObject)
       activeObject._renderControls(ctx)
     }
   }

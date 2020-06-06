@@ -140,10 +140,10 @@ module.exports = {
     this._setLineDash(ctx, styleOverride.borderDashArray || this.borderDashArray, null);
     // console.log('---------drawBorders', this.left, this.top)
     ctx.strokeRect(
-      // -width / 2,
-      // -height / 2,
-      this.left,
-      this.top,
+      -width / 2,
+      -height / 2,
+      // this.left,
+      // this.top,
       width,
       height
     );
@@ -183,10 +183,10 @@ module.exports = {
     this._setLineDash(ctx, styleOverride.borderDashArray || this.borderDashArray, null);
     ctx.strokeStyle = styleOverride.borderColor || this.borderColor;
     ctx.strokeRect(
-      // -width / 2,
-      // -height / 2,
-      this.left,
-      this.top,
+      -width / 2,
+      -height / 2,
+      // this.left,
+      // this.top,
       width,
       height
     );

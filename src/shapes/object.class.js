@@ -327,7 +327,7 @@ class ObjectClass {
     matrix = multiplyTransformMatrices(vpt, matrix);
     options = qrDecompose(matrix);
     ctx.save();
-    // ctx.translate(options.translateX, options.translateY);
+    ctx.translate(options.translateX, options.translateY);
     ctx.lineWidth = 1 * this.borderScaleFactor;
     if (!this.group) {
       ctx.globalAlpha = this.isMoving ? this.borderOpacityWhenMoving : 1;

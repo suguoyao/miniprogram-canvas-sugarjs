@@ -34,7 +34,6 @@ module.exports = {
    */
   touchstart: function (e) {
     this._target = null
-    console.log('touchstart', e)
     this._handleEvent(e, 'start:before');
     this._target = this._currentTransform ? this._currentTransform.target : this.findTarget(e) || null
 
@@ -66,9 +65,20 @@ module.exports = {
   },
   touchmove: function (e) {
     if (!this.allowTouchScrolling) return
+    // console.log('move', e)
+
+    let target = this.findTarget(e)
+    if (e.touches && e.touches.length === 2) {
+      // 双指手势
+      if (target) {
+        // TODO 缩放、旋转
+        // this.__gesturesRenderer()
+        // this._handleEvent(e, 'gesture');
+      }
+      return
+    }
     this._handleEvent(e, 'move:before');
 
-    let target;
     if (!this._currentTransform) {
       // target = this.findTarget(e) || null;
       // this._setCursorFromEvent(e, target);
@@ -81,7 +91,7 @@ module.exports = {
     this._resetTransformEventData();
   },
   touchend: function (e) {
-    console.log(e)
+    // console.log(e)
     if (e.touches.length > 0) {
       return
     }
@@ -287,5 +297,9 @@ module.exports = {
       e: e,
       transform: t,
     });
+  },
+  __gesturesParams: null,
+  __gesturesRenderer: function () {
+
   }
 }
