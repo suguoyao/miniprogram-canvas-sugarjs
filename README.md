@@ -9,7 +9,7 @@
 打造一个致力于微信小程序的Canvas库，类似于H5原生JS Canvas库 - [FabricJS](http://fabricjs.com/)
 
 <p align="center" style="text-align: center;">
-  <img width="400" src="https://sugars.oss-cn-shenzhen.aliyuncs.com/mp-canvas-sugarjs/sugarjs-demo.png" style="display:inline-block;">
+  <img width="400" src="https://sugars.oss-cn-shenzhen.aliyuncs.com/mp-canvas-sugarjs/sugarjs-demo.png?x-oss-process=style/quality" style="display:inline-block;">
 </p>
 
 ## 开发进度
