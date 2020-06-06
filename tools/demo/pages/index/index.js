@@ -162,6 +162,17 @@ Page({
 
     this.sugar.add(rect)
   },
+  addTriangle() {
+    const triangle = new sugar.Triangle({
+      left: 55,
+      top: 100,
+      fill: 'pink',
+      width: 80,
+      height: 120
+    })
+
+    this.sugar.add(triangle)
+  },
   deleteObject() {
     const activeObject = this.sugar.getActiveObject()
     if (!activeObject) return
