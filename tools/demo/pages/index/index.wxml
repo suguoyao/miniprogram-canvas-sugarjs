@@ -24,6 +24,7 @@
   <button class="black" bindtap="addPolygon">多边形</button>
   <button class="black" bindtap="addTriangle">三角形</button>
   <button class="black" bindtap="addCircle">圆</button>
+  <button class="black" bindtap="addEllipse">椭圆</button>
   <button class="red" bindtap="deleteObject">删除图层</button>
 </view>
 

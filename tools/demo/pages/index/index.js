@@ -219,6 +219,17 @@ Page({
 
     this.sugar.add(circle)
   },
+  addEllipse() {
+    const ellipse = new sugar.Ellipse({
+      fill: '#440250',
+      rx: 50,
+      ry: 100,
+      top: 166,
+      left: 166
+    })
+
+    this.sugar.add(ellipse)
+  },
   deleteObject() {
     const activeObject = this.sugar.getActiveObject()
     if (!activeObject) return
