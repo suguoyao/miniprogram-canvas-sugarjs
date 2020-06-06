@@ -100,6 +100,25 @@ Page({
       this.sugar.add(img).setActiveObject(img)
     })
   },
+  selectImage() {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['original', 'compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const tempFilePath = res.tempFilePaths[0]
+        sugar.Image.fromURL(tempFilePath, (img) => {
+          img.set({
+            scaleX: 0.5,
+            scaleY: 0.5,
+            left: 0,
+            top: 0
+          })
+          this.sugar.add(img).setActiveObject(img)
+        })
+      }
+    })
+  },
   getCanvasObject() {
     console.log(this.sugar)
   },
@@ -117,6 +136,24 @@ Page({
     })
     this.sugar.renderAll()
   },
+  zoomUp() {
+    const activeObject = this.sugar.getActiveObject()
+    if (!activeObject) return
+    activeObject.set({
+      scaleX: activeObject.scaleX * 1.1,
+      scaleY: activeObject.scaleY * 1.1
+    })
+    this.sugar.renderAll()
+  },
+  zoomOut() {
+    const activeObject = this.sugar.getActiveObject()
+    if (!activeObject) return
+    activeObject.set({
+      scaleX: activeObject.scaleX * 0.9,
+      scaleY: activeObject.scaleY * 0.9
+    })
+    this.sugar.renderAll()
+  },
   deleteObject() {
     const activeObject = this.sugar.getActiveObject()
     if (!activeObject) return
@@ -126,6 +163,11 @@ Page({
   toDataURL() {
     this.setData({
       dataUrl: this.sugar.toDataURL()
+    })
+  },
+  preview() {
+    wx.previewImage({
+      urls: [this.data.dataUrl]
     })
   },
   touchstart(e) {
