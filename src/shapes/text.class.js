@@ -22,6 +22,7 @@ class TextClass extends ObjectClass {
     this.charSpacing = 0
     this.styles = null
     this._fontSizeMult = 1.13
+    this._fontSizeFraction = 0.222
 
     this._reNewline = /\r?\n/
     this._reSpaceAndTab = /[ \t\r]/
@@ -29,6 +30,7 @@ class TextClass extends ObjectClass {
 
     this.__charBounds = []
     this.MIN_TEXT_WIDTH = 2
+    this.CACHE_FONT_SIZE = 400
 
     this._styleProperties = [
       'stroke',
@@ -71,14 +73,16 @@ class TextClass extends ObjectClass {
   initDimensions() {
     this._splitText();
     this._clearCache();
-    // this.width = this.canvas.ctx.measureText(this.text).width || this.MIN_TEXT_WIDTH
-    this.height = this.calcTextHeight()
 
-    // this.width = this.calcTextWidth() || this.MIN_TEXT_WIDTH;
-    // if (this.textAlign.indexOf('justify') !== -1) {
-    //   this.enlargeSpaces();
-    // }
-    // this.height = this.calcTextHeight();
+    if (this.canvas && this.canvas.ctx) {
+      // this.width = this.canvas.ctx.measureText(this.text).width || this.MIN_TEXT_WIDTH
+      this.width = this.calcTextWidth() || this.MIN_TEXT_WIDTH
+    }
+    this.height = this.calcTextHeight()
+    if (this.textAlign.indexOf('justify') !== -1) {
+      this.enlargeSpaces();
+    }
+    this.height = this.calcTextHeight();
     // this.saveState({propertySet: '_dimensionAffectingProps'})
   }
 
@@ -172,7 +176,7 @@ class TextClass extends ObjectClass {
   }
 
   getMeasuringContext() {
-    let _measuringContext = this.canvas && this.canvas.contextCache
+    let _measuringContext = this.canvas && this.canvas.ctx
     return _measuringContext;
   }
 
@@ -218,6 +222,7 @@ class TextClass extends ObjectClass {
         maxWidth = currentLineWidth;
       }
     }
+    console.log('文本宽度', maxWidth)
     return maxWidth;
   }
 
@@ -272,6 +277,53 @@ class TextClass extends ObjectClass {
     return {width: width, numOfSpaces: numOfSpaces};
   }
 
+  _renderTextCommon(ctx, method) {
+    ctx.save();
+    let lineHeights = 0, left = this._getLeftOffset(ctx), top = this._getTopOffset(ctx),
+      offsets = this._applyPatternGradientTransform(ctx, method === 'fillText' ? this.fill : this.stroke);
+    for (let i = 0, len = this._textLines.length; i < len; i++) {
+      let heightOfLine = this.getHeightOfLine(i),
+        maxHeight = heightOfLine / this.lineHeight,
+        leftOffset = this._getLineLeftOffset(i);
+      this._renderTextLine(
+        method,
+        ctx,
+        this._textLines[i],
+        left + leftOffset - offsets.offsetX, // TODO 优化position
+        top + lineHeights + maxHeight - offsets.offsetY,
+        i
+      );
+      lineHeights += heightOfLine;
+    }
+    ctx.restore();
+  }
+
+  _getLeftOffset(ctx) {
+    // this.width = ctx.measureText(this.text).width || this.MIN_TEXT_WIDTH
+    return -this.width / 2;
+  }
+
+  _getTopOffset(ctx) {
+    return -this.height / 2;
+  }
+
+  _getLineLeftOffset(lineIndex) {
+    let lineWidth = this.getLineWidth(lineIndex);
+    if (this.textAlign === 'center') {
+      return (this.width - lineWidth) / 2;
+    }
+    if (this.textAlign === 'right') {
+      return this.width - lineWidth;
+    }
+    if (this.textAlign === 'justify-center' && this.isEndOfWrapping(lineIndex)) {
+      return (this.width - lineWidth) / 2;
+    }
+    if (this.textAlign === 'justify-right' && this.isEndOfWrapping(lineIndex)) {
+      return this.width - lineWidth;
+    }
+    return 0;
+  }
+
   _getGraphemeBox(grapheme, lineIndex, charIndex, prevGrapheme, skipLeft) {
     let style = this.getCompleteStyleDeclaration(lineIndex, charIndex),
       prevStyle = prevGrapheme ? this.getCompleteStyleDeclaration(lineIndex, charIndex - 1) : {},
@@ -316,9 +368,9 @@ class TextClass extends ObjectClass {
       coupleWidth = fontCache[couple];
       kernedWidth = coupleWidth - previousWidth;
     }
+    let ctx
     if (width === undefined || previousWidth === undefined || coupleWidth === undefined) {
-      let ctx = this.getMeasuringContext();
-      // send a TRUE to specify measuring font size CACHE_FONT_SIZE
+      ctx = this.getMeasuringContext();
       this._setTextStyles(ctx, charStyle, true);
     }
     if (width === undefined) {
@@ -330,7 +382,6 @@ class TextClass extends ObjectClass {
       fontCache[previousChar] = previousWidth;
     }
     if (stylesAreEqual && coupleWidth === undefined) {
-      // we can measure the kerning couple and subtract the width of the previous character
       coupleWidth = ctx.measureText(couple).width;
       fontCache[couple] = coupleWidth;
       kernedWidth = coupleWidth - previousWidth;
@@ -339,18 +390,20 @@ class TextClass extends ObjectClass {
   }
 
   _getFontDeclaration(styleObject, forMeasuring) {
-    let style = styleObject || this, family = this.fontFamily,
-      fontIsGeneric = TextClass.genericFonts.indexOf(family.toLowerCase()) > -1;
-    let fontFamily = family === undefined ||
-    family.indexOf('\'') > -1 || family.indexOf(',') > -1 ||
-    family.indexOf('"') > -1 || fontIsGeneric
-      ? style.fontFamily : '"' + style.fontFamily + '"';
-    return [
-      style.fontStyle,
-      style.fontWeight,
-      forMeasuring ? this.CACHE_FONT_SIZE + 'px' : style.fontSize + 'px',
-      fontFamily
-    ].join(' ');
+    // let style = styleObject || this, family = this.fontFamily,
+    //   fontIsGeneric = TextClass.genericFonts.indexOf(family.toLowerCase()) > -1;
+    // let fontFamily = family === undefined ||
+    // family.indexOf('\'') > -1 || family.indexOf(',') > -1 ||
+    // family.indexOf('"') > -1 || fontIsGeneric
+    //   ? style.fontFamily : '"' + style.fontFamily + '"';
+    // return [
+    //   style.fontStyle,
+    //   style.fontWeight,
+    //   forMeasuring ? this.CACHE_FONT_SIZE + 'px' : style.fontSize + 'px',
+    //   fontFamily
+    // ].join(' ');
+
+    return `${this.fontStyle} ${this.fontWeight} ${this.fontSize}px ${this.fontFamily}`
   }
 
   _getWidthOfCharSpacing() {
@@ -361,44 +414,305 @@ class TextClass extends ObjectClass {
   }
 
   _setTextStyles(ctx, charStyle, forMeasuring) {
-    ctx.textBaseline = 'alphabetic';
     ctx.font = this._getFontDeclaration(charStyle, forMeasuring);
+    this.width = ctx.measureText(this.text).width || this.MIN_TEXT_WIDTH
+  }
+
+  _renderTextLinesBackground(ctx) {
+    if (!this.textBackgroundColor && !this.styleHas('textBackgroundColor')) {
+      return;
+    }
+    var lineTopOffset = 0, heightOfLine,
+      lineLeftOffset, originalFill = ctx.fillStyle,
+      line, lastColor,
+      leftOffset = this._getLeftOffset(ctx),
+      topOffset = this._getTopOffset(ctx),
+      boxStart = 0, boxWidth = 0, charBox, currentColor;
+
+    for (var i = 0, len = this._textLines.length; i < len; i++) {
+      heightOfLine = this.getHeightOfLine(i);
+      if (!this.textBackgroundColor && !this.styleHas('textBackgroundColor', i)) {
+        lineTopOffset += heightOfLine;
+        continue;
+      }
+      line = this._textLines[i];
+      lineLeftOffset = this._getLineLeftOffset(i);
+      boxWidth = 0;
+      boxStart = 0;
+      lastColor = this.getValueOfPropertyAt(i, 0, 'textBackgroundColor');
+      for (var j = 0, jlen = line.length; j < jlen; j++) {
+        charBox = this.__charBounds[i][j];
+        currentColor = this.getValueOfPropertyAt(i, j, 'textBackgroundColor');
+        if (currentColor !== lastColor) {
+          ctx.fillStyle = lastColor;
+          lastColor && ctx.fillRect(
+            leftOffset + lineLeftOffset + boxStart,
+            topOffset + lineTopOffset,
+            boxWidth,
+            heightOfLine / this.lineHeight
+          );
+          boxStart = charBox.left;
+          boxWidth = charBox.width;
+          lastColor = currentColor;
+        } else {
+          boxWidth += charBox.kernedWidth;
+        }
+      }
+      if (currentColor) {
+        ctx.fillStyle = currentColor;
+        ctx.fillRect(
+          leftOffset + lineLeftOffset + boxStart,
+          topOffset + lineTopOffset,
+          boxWidth,
+          heightOfLine / this.lineHeight
+        );
+      }
+      lineTopOffset += heightOfLine;
+    }
+    ctx.fillStyle = originalFill;
+
+    this._removeShadow(ctx);
+  }
+
+  _renderTextDecoration(ctx, type) {
+    if (!this[type] && !this.styleHas(type)) {
+      return;
+    }
+    var heightOfLine, size, _size,
+      lineLeftOffset, dy, _dy,
+      line, lastDecoration,
+      leftOffset = this._getLeftOffset(ctx),
+      topOffset = this._getTopOffset(ctx), top,
+      boxStart, boxWidth, charBox, currentDecoration,
+      maxHeight, currentFill, lastFill,
+      charSpacing = this._getWidthOfCharSpacing();
+
+    for (var i = 0, len = this._textLines.length; i < len; i++) {
+      heightOfLine = this.getHeightOfLine(i);
+      if (!this[type] && !this.styleHas(type, i)) {
+        topOffset += heightOfLine;
+        continue;
+      }
+      line = this._textLines[i];
+      maxHeight = heightOfLine / this.lineHeight;
+      lineLeftOffset = this._getLineLeftOffset(i);
+      boxStart = 0;
+      boxWidth = 0;
+      lastDecoration = this.getValueOfPropertyAt(i, 0, type);
+      lastFill = this.getValueOfPropertyAt(i, 0, 'fill');
+      top = topOffset + maxHeight * (1 - this._fontSizeFraction);
+      size = this.getHeightOfChar(i, 0);
+      dy = this.getValueOfPropertyAt(i, 0, 'deltaY');
+      for (var j = 0, jlen = line.length; j < jlen; j++) {
+        charBox = this.__charBounds[i][j];
+        currentDecoration = this.getValueOfPropertyAt(i, j, type);
+        currentFill = this.getValueOfPropertyAt(i, j, 'fill');
+        _size = this.getHeightOfChar(i, j);
+        _dy = this.getValueOfPropertyAt(i, j, 'deltaY');
+        if ((currentDecoration !== lastDecoration || currentFill !== lastFill || _size !== size || _dy !== dy) &&
+          boxWidth > 0) {
+          ctx.fillStyle = lastFill;
+          lastDecoration && lastFill && ctx.fillRect(
+            leftOffset + lineLeftOffset + boxStart,
+            top + this.offsets[type] * size + dy,
+            boxWidth,
+            this.fontSize / 15
+          );
+          boxStart = charBox.left;
+          boxWidth = charBox.width;
+          lastDecoration = currentDecoration;
+          lastFill = currentFill;
+          size = _size;
+          dy = _dy;
+        } else {
+          boxWidth += charBox.kernedWidth;
+        }
+      }
+      ctx.fillStyle = currentFill;
+      currentDecoration && currentFill && ctx.fillRect(
+        leftOffset + lineLeftOffset + boxStart,
+        top + this.offsets[type] * size + dy,
+        boxWidth - charSpacing,
+        this.fontSize / 15
+      );
+      topOffset += heightOfLine;
+    }
+    this._removeShadow(ctx);
+  }
+
+  _renderTextStroke(ctx) {
+    if ((!this.stroke || this.strokeWidth === 0) && this.isEmptyStyles()) {
+      return;
+    }
+
+    if (this.shadow && !this.shadow.affectStroke) {
+      this._removeShadow(ctx);
+    }
+
+    ctx.save();
+    this._setLineDash(ctx, this.strokeDashArray);
+    ctx.beginPath();
+    this._renderTextCommon(ctx, 'strokeText');
+    ctx.closePath();
+    ctx.restore();
+  }
+
+  _renderText(ctx) {
+    if (this.paintFirst === 'stroke') {
+      this._renderTextStroke(ctx);
+      this._renderTextFill(ctx);
+    } else {
+      this._renderTextFill(ctx);
+      this._renderTextStroke(ctx);
+    }
+  }
+
+  _renderTextFill(ctx) {
+    if (!this.fill && !this.styleHas('fill')) {
+      return;
+    }
+
+    this._renderTextCommon(ctx, 'fillText');
+  }
+
+  _renderTextLine(method, ctx, line, left, top, lineIndex) {
+    this._renderChars(method, ctx, line, left, top, lineIndex);
+  }
+
+  _renderChars(method, ctx, line, left, top, lineIndex) {
+    // set proper line offset
+    var lineHeight = this.getHeightOfLine(lineIndex),
+      isJustify = this.textAlign.indexOf('justify') !== -1,
+      actualStyle,
+      nextStyle,
+      charsToRender = '',
+      charBox,
+      boxWidth = 0,
+      timeToRender,
+      shortCut = !isJustify && this.charSpacing === 0 && this.isEmptyStyles(lineIndex);
+
+    ctx.save();
+    top -= lineHeight * this._fontSizeFraction / this.lineHeight;
+    if (shortCut) {
+      // render all the line in one pass without checking
+      this._renderChar(method, ctx, lineIndex, 0, this.textLines[lineIndex], left, top, lineHeight);
+      ctx.restore();
+      return;
+    }
+    for (var i = 0, len = line.length - 1; i <= len; i++) {
+      timeToRender = i === len || this.charSpacing;
+      charsToRender += line[i];
+      charBox = this.__charBounds[lineIndex][i];
+      if (boxWidth === 0) {
+        left += charBox.kernedWidth - charBox.width;
+        boxWidth += charBox.width;
+      } else {
+        boxWidth += charBox.kernedWidth;
+      }
+      if (isJustify && !timeToRender) {
+        if (this._reSpaceAndTab.test(line[i])) {
+          timeToRender = true;
+        }
+      }
+      if (!timeToRender) {
+        // if we have charSpacing, we render char by char
+        actualStyle = actualStyle || this.getCompleteStyleDeclaration(lineIndex, i);
+        nextStyle = this.getCompleteStyleDeclaration(lineIndex, i + 1);
+        timeToRender = this._hasStyleChanged(actualStyle, nextStyle);
+      }
+      if (timeToRender) {
+        this._renderChar(method, ctx, lineIndex, i, charsToRender, left, top, lineHeight);
+        charsToRender = '';
+        actualStyle = nextStyle;
+        left += boxWidth;
+        boxWidth = 0;
+      }
+    }
+    ctx.restore();
+  }
+
+  _renderChar(method, ctx, lineIndex, charIndex, _char, left, top) {
+    var decl = this._getStyleDeclaration(lineIndex, charIndex),
+      fullDecl = this.getCompleteStyleDeclaration(lineIndex, charIndex),
+      shouldFill = method === 'fillText' && fullDecl.fill,
+      shouldStroke = method === 'strokeText' && fullDecl.stroke && fullDecl.strokeWidth;
+
+    if (!shouldStroke && !shouldFill) {
+      return;
+    }
+    decl && ctx.save();
+
+    this._applyCharStyles(method, ctx, lineIndex, charIndex, fullDecl);
+
+    if (decl && decl.textBackgroundColor) {
+      this._removeShadow(ctx);
+    }
+    if (decl && decl.deltaY) {
+      top += decl.deltaY;
+    }
+    // console.log('ctx.fillText', _char, left, top)
+    shouldFill && ctx.fillText(_char, left, top);
+    shouldStroke && ctx.strokeText(_char, left, top);
+    decl && ctx.restore();
+  }
+
+  _applyCharStyles(method, ctx, lineIndex, charIndex, styleDeclaration) {
+    this._setFillStyles(ctx, styleDeclaration);
+    this._setStrokeStyles(ctx, styleDeclaration);
+    ctx.font = this._getFontDeclaration(styleDeclaration);
+  }
+
+  _hasStyleChanged(prevStyle, thisStyle) {
+    return prevStyle.fill !== thisStyle.fill ||
+      prevStyle.stroke !== thisStyle.stroke ||
+      prevStyle.strokeWidth !== thisStyle.strokeWidth ||
+      prevStyle.fontSize !== thisStyle.fontSize ||
+      prevStyle.fontFamily !== thisStyle.fontFamily ||
+      prevStyle.fontWeight !== thisStyle.fontWeight ||
+      prevStyle.fontStyle !== thisStyle.fontStyle ||
+      prevStyle.deltaY !== thisStyle.deltaY;
   }
 
   set(key, value) {
     super.set(key, value)
-    // let needsDims = false;
-    // if (typeof key === 'object') {
-    //   for (let _key in key) {
-    //     needsDims = needsDims || this._dimensionAffectingProps.indexOf(_key) !== -1;
-    //   }
-    // } else {
-    //   needsDims = this._dimensionAffectingProps.indexOf(key) !== -1;
-    // }
-    // if (needsDims) {
-    //   this.initDimensions();
-    //   this.setCoords();
-    // }
+    let needsDims = false;
+    if (typeof key === 'object') {
+      for (let _key in key) {
+        needsDims = needsDims || this._dimensionAffectingProps.indexOf(_key) !== -1;
+      }
+    } else {
+      needsDims = this._dimensionAffectingProps.indexOf(key) !== -1;
+    }
+    if (needsDims) {
+      this.initDimensions();
+      this.setCoords();
+    }
     return this;
   }
 
   _render(ctx) {
-    console.log('_render绘制文字', this);
-    ctx.save()
-    // italic bold 20px cursive
-    ctx.font = `${this.fontStyle} ${this.fontWeight} ${this.fontSize}px ${this.fontFamily}`
-    this.width = ctx.measureText(this.text).width || this.MIN_TEXT_WIDTH
-    ctx.fillStyle = this.fill
-    ctx.fillText(this.text, this.left, this.top + this.fontSize)
-    // ctx.strokeText(this.text, this.left, this.top)
-    ctx.restore();
+    // console.log('_render绘制文字', ctx, this);
+    // ctx.save()
+    // // italic bold 20px cursive
+    // ctx.font = `${this.fontStyle} ${this.fontWeight} ${this.fontSize}px ${this.fontFamily}`
+    // this.width = ctx.measureText(this.text).width || this.MIN_TEXT_WIDTH
+    // ctx.fillStyle = this.fill
+    // // ctx.fillText(this.text, this.left, this.top + this.fontSize)
+    // ctx.fillText(this.text, this.left, this.top)
+    // // ctx.strokeText(this.text, this.left, this.top)
+    // ctx.restore();
+    this._setTextStyles(ctx);
+    this._renderTextLinesBackground(ctx);
+    this._renderTextDecoration(ctx, 'underline');
+    this._renderText(ctx);
+    this._renderTextDecoration(ctx, 'overline');
+    this._renderTextDecoration(ctx, 'linethrough');
   }
 
   render(ctx) {
     if (!this.visible) {
       return;
     }
-
     // if (this.canvas && this.canvas.skipOffscreen && !this.group && !this.isOnScreen()) {
     //   return;
     // }
