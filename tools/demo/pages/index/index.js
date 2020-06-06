@@ -173,6 +173,16 @@ Page({
 
     this.sugar.add(triangle)
   },
+  addCircle() {
+    const circle = new sugar.Circle({
+      fill: '#0c32a0',
+      radius: 50,
+      top: 200,
+      left: 200
+    })
+
+    this.sugar.add(circle)
+  },
   deleteObject() {
     const activeObject = this.sugar.getActiveObject()
     if (!activeObject) return
