@@ -1,6 +1,6 @@
 {
   "name": "miniprogram-canvas-sugarjs",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "打造一个致力于微信小程序的Canvas库，类似于H5原生JS Canvas库-FabricJS",
   "main": "miniprogram_dist/sugarjs.js",
   "scripts": {
