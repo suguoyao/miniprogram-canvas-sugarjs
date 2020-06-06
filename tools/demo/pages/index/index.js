@@ -70,9 +70,6 @@ Page({
         })
       })
   },
-  addRect() {
-    // this.sugar.add()
-  },
   addText() {
     const text = new sugar.Text('Sugar苏\n换行', {
       left: randomNumInRange(0, 200),
@@ -153,6 +150,17 @@ Page({
       scaleY: activeObject.scaleY * 0.9
     })
     this.sugar.renderAll()
+  },
+  addRect() {
+    const rect = new sugar.Rect({
+      left: 100,
+      top: 100,
+      fill: 'green',
+      width: 100,
+      height: 100
+    })
+
+    this.sugar.add(rect)
   },
   deleteObject() {
     const activeObject = this.sugar.getActiveObject()

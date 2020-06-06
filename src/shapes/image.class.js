@@ -65,7 +65,7 @@ class ImageClass extends ObjectClass {
   }
 
   _renderFill(ctx) {
-    console.log('绘制图片', this)
+    // console.log('绘制图片', this)
     let elementToDraw = this._element
     if (!elementToDraw) {
       return;

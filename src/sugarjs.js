@@ -5,7 +5,7 @@ const CanvasClass = require('./canvas.class')
 const ObjectClass = require('./shapes/object.class')
 const ImageClass = require('./shapes/image.class')
 const TextClass = require('./shapes/text.class')
-// const RectClass = require('./shapes/rect.class')
+const RectClass = require('./shapes/rect.class')
 const GradientClass = require('./gradient.class')
 const PatternClass = require('./pattern.class')
 const PointClass = require('./point.class')
@@ -36,11 +36,11 @@ Sugar.Canvas = CanvasClass
 Sugar.Object = ObjectClass
 Sugar.Image = ImageClass
 Sugar.Text = TextClass
-// Sugar.Rect = RectClass
-Sugar.GradientClass = GradientClass
-Sugar.PatternClass = PatternClass
-Sugar.PointClass = PointClass
-Sugar.ColorClass = ColorClass
+Sugar.Rect = RectClass
+Sugar.Gradient = GradientClass
+Sugar.Pattern = PatternClass
+Sugar.Point = PointClass
+Sugar.Color = ColorClass
 
 
 module.exports = Sugar

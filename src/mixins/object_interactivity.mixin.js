@@ -150,8 +150,8 @@ module.exports = {
 
     if (hasControls) {
       ctx.beginPath();
-      this.forEachControl(function (control, key, fabricObject) {
-        if (control.withConnection && control.getVisibility(fabricObject, key)) {
+      this.forEachControl(function (control, key, object) {
+        if (control.withConnection && control.getVisibility(object, key)) {
           // reset movement for each control
           shouldStroke = true;
           ctx.moveTo(control.x * width, control.y * height);
@@ -205,11 +205,11 @@ module.exports = {
     }
     this._setLineDash(ctx, styleOverride.cornerDashArray || this.cornerDashArray, null);
     this.setCoords();
-    this.forEachControl(function (control, key, fabricObject) {
-      if (control.getVisibility(fabricObject, key)) {
+    this.forEachControl(function (control, key, object) {
+      if (control.getVisibility(object, key)) {
         control.render(ctx,
-          fabricObject.oCoords[key].x,
-          fabricObject.oCoords[key].y, styleOverride, fabricObject);
+          object.oCoords[key].x,
+          object.oCoords[key].y, styleOverride, object);
       }
     });
     ctx.restore();

@@ -49,7 +49,7 @@ module.exports = {
 
   intersectsWithRect: function (pointTL, pointBR, absolute, calculate) {
     let coords = this.getCoords(absolute, calculate),
-      intersection = fabric.Intersection.intersectPolygonRectangle(
+      intersection = IntersectionClass.intersectPolygonRectangle(
         coords,
         pointTL,
         pointBR
@@ -307,8 +307,8 @@ module.exports = {
       finalMatrix = multiplyTransformMatrices(finalMatrix, [1 / vpt[0], 0, 0, 1 / vpt[3], 0, 0]),
       dim = this._calculateCurrentDimensions(),
       coords = {};
-    this.forEachControl(function (control, key, fabricObject) {
-      coords[key] = control.positionHandler(dim, finalMatrix, fabricObject);
+    this.forEachControl(function (control, key, object) {
+      coords[key] = control.positionHandler(dim, finalMatrix, object);
     });
 
     // debug code

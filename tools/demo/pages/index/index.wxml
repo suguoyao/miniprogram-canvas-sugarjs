@@ -20,6 +20,7 @@
   <button class="black" bindtap="flip">翻转</button>
   <button class="black" bindtap="zoomUp">放大</button>
   <button class="black" bindtap="zoomOut">缩小</button>
+  <button class="black" bindtap="addRect">矩形</button>
   <button class="red" bindtap="deleteObject">删除图层</button>
 </view>
 

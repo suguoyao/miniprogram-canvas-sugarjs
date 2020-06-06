@@ -25,8 +25,8 @@ class PatternClass {
     } else {
       // img src string
       let _this = this;
-      // this.source = fabric.util.createImage();
-      // fabric.util.loadImage(options.source, function (img, isError) {
+      // this.source = createImage();
+      // loadImage(options.source, function (img, isError) {
       //   _this.source = img;
       //   callback && callback(_this, isError);
       // }, null, this.crossOrigin);
@@ -34,7 +34,6 @@ class PatternClass {
   }
 
   toObject(propertiesToInclude) {
-    // let NUM_FRACTION_DIGITS = fabric.Object.NUM_FRACTION_DIGITS,
     let NUM_FRACTION_DIGITS = 2,
       source, object;
 

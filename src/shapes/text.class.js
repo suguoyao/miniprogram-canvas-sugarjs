@@ -207,12 +207,6 @@ class TextClass extends ObjectClass {
     return {_unwrappedLines: newLines, lines: lines, graphemeText: newText, graphemeLines: newLines}
   }
 
-  /**
-   * calculate and return the text Width measuring each line.
-   * @private
-   * @param {CanvasRenderingContext2D} ctx Context to render on
-   * @return {Number} Maximum width of fabric.Text object
-   */
   calcTextWidth() {
     let maxWidth = this.getLineWidth(0);
 
